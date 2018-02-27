@@ -70,9 +70,9 @@ function getFlatMenuData(menus) {
 
 export const getRouterData = (app) => {
   const routerConfig = {
-    '/': {
-      component: dynamicWrapper(app, ['user', 'login'], () => import('../layouts/BasicLayout')),
-    },
+    // '/': {
+    //   component: dynamicWrapper(app, ['user', 'login'], () => import('../layouts/BasicLayout')),
+    // },
     '/dashboard/analysis': {
       component: dynamicWrapper(app, ['chart'], () => import('../routes/Dashboard/Analysis')),
     },
@@ -163,7 +163,7 @@ export const getRouterData = (app) => {
     // '/user/:id': {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),
     // },
-    '/mobile': {
+    '/': {// 挂载手机端主页布局
       component: dynamicWrapper(app, [], () => import('../layouts/MobileLayout')),
     },
   };
