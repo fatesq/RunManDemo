@@ -67,7 +67,7 @@ class MobileLayout extends React.PureComponent {
                 />
               )
             )}
-            <Redirect exact from="/" to="/dashboard/analysis" />
+            <Redirect exact from="/" to="/deliver" />
           </Switch>
         </Drawer>
       </div>

@@ -166,6 +166,9 @@ export const getRouterData = (app) => {
     '/': {// 挂载手机端主页布局
       component: dynamicWrapper(app, [], () => import('../layouts/MobileLayout')),
     },
+    '/deliver': {
+      component: dynamicWrapper(app, [], () => import('../routes/Deliver')),
+    },
   };
   // Get name from ./menu.js or just set it in the router data.
   const menuData = getFlatMenuData(getMenuData());
