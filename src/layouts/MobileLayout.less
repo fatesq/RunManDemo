@@ -12,3 +12,78 @@
     }
   }
 }
+
+.detail-header-bg {
+  height: 44px;
+  margin-top: -44px;
+  .header-dom {
+    position: fixed;
+    z-index: 20;
+    left: 0;
+    right: 0;
+    top: 0;
+    line-height: 44px;
+    height: 44px;
+    overflow: visible;
+    li, ol, ul {
+      list-style: none;
+    }
+    li {
+      display: list-item;
+      text-align: -webkit-match-parent;
+    }
+    .mui-flex {
+      box-sizing: border-box;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .cells {
+      flex: 1;
+      width: 0;
+      flex-basis: 0;
+      max-width: 100%;
+      display: block;
+      padding: 0!important;
+      position: relative;
+      .actives {
+        color: #ff0036;
+        border-color: #ff0036;
+      }
+    }
+    .main-dom {
+      background: #fff;
+      box-shadow: 0 1px 0 rgba(0,0,0,.05), 0 0.5px 0 rgba(0,0,0,.09);
+    }
+    .left-btns {
+      padding: 0px 0 0px 10px;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .right-btns {
+      padding: 0px 10px 0px 0;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .header-nav {
+      text-align: center;
+      font-size: 13px;
+      // opacity: 0;
+      // transition: opacity ease .2s;
+      margin: 0 8%;
+      display: flex;
+      flex-wrap: wrap;
+      a {
+        color: #999;
+        height: 44px;
+        line-height: 44px;
+        flex: 1;
+        border-bottom: 2px solid #fff;
+      }
+    }
+    .icon{
+      height: 44px;
+      line-height: 44px;
+    }
+  }
+
+}

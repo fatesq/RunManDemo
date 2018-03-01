@@ -1,6 +1,6 @@
 import React from 'react';
 import { Map } from 'react-amap';
-import styles from './index.less';
+// import styles from './index.less';
 
 export default class MapC extends React.PureComponent {
   componentDidMount() {}
