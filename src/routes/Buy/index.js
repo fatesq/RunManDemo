@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon, Form } from 'antd';
-import { WingBlank, Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio } from 'antd-mobile';
+import { WingBlank, Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio, Tag } from 'antd-mobile';
 import { Link } from 'dva/router';
 import styles from './index.less';
 
@@ -9,7 +9,7 @@ const { Item } = List;
 const { Brief } = Item;
 const { RadioItem } = Radio;
 @Form.create()
-export default class Get extends React.PureComponent {
+export default class Buy extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -63,19 +63,16 @@ export default class Get extends React.PureComponent {
           </List>
           <WhiteSpace size="xs" />
           <List>
-            <Item
-              extra={
-                <Stepper
-                  style={{ width: '100%', minWidth: '100px' }}
-                  showNumber
-                  min={0}
-                  value={this.state.tip}
-                  onChange={this.onChangeTip}
-                />
-              }
-            >
-              物品重量
-            </Item>
+            <div className={styles['tag-container']}>
+              <Tag data-seed="logId">随意购</Tag>
+              <Tag selected>超市代购</Tag>
+              <Tag >买烟买酒</Tag>
+              <Tag >日常用品</Tag>
+              <Tag >买早餐</Tag>
+              <Tag >买夜宵</Tag>
+              <Tag >买水果</Tag>
+              <Tag >买药品</Tag>
+            </div>
             <Item arrow="horizontal" onClick={() => {}}>保价</Item>
             <Item
               extra={

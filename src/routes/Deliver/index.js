@@ -6,7 +6,6 @@ import styles from './index.less';
 
 
 const { Item } = List;
-const { Brief } = Item;
 const { RadioItem } = Radio;
 @Form.create()
 export default class Deliver extends React.PureComponent {

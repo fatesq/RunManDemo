@@ -9,7 +9,7 @@ const { Item } = List;
 const { Brief } = Item;
 const { RadioItem } = Radio;
 @Form.create()
-export default class Get extends React.PureComponent {
+export default class Todo extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
@@ -63,19 +63,7 @@ export default class Get extends React.PureComponent {
           </List>
           <WhiteSpace size="xs" />
           <List>
-            <Item
-              extra={
-                <Stepper
-                  style={{ width: '100%', minWidth: '100px' }}
-                  showNumber
-                  min={0}
-                  value={this.state.tip}
-                  onChange={this.onChangeTip}
-                />
-              }
-            >
-              物品重量
-            </Item>
+            <Item> &nbsp;</Item>
             <Item arrow="horizontal" onClick={() => {}}>保价</Item>
             <Item
               extra={

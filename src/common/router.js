@@ -172,6 +172,12 @@ export const getRouterData = (app) => {
     '/get': {
       component: dynamicWrapper(app, [], () => import('../routes/Get')),
     },
+    '/buy': {
+      component: dynamicWrapper(app, [], () => import('../routes/Buy')),
+    },
+    '/todo': {
+      component: dynamicWrapper(app, [], () => import('../routes/Todo')),
+    },
     '/map': {
       component: dynamicWrapper(app, [], () => import('../routes/Map')),
     },
