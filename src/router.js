@@ -16,8 +16,8 @@ dynamic.setDefaultLoadingComponent(() => {
 function RouterConfig({ history, app }) {
   const routerData = getRouterData(app);
   const UserLayout = routerData['/user'].component;
-  // const BasicLayout = routerData['/'].component;
-  const MobileLayout = routerData['/'].component;
+  const BasicLayout = routerData['/'].component;
+  const MobileLayout = routerData['/home'].component;
   return (
     <LocaleProvider locale={zhCN}>
       <ConnectedRouter history={history}>
@@ -26,9 +26,13 @@ function RouterConfig({ history, app }) {
             path="/user"
             component={UserLayout}
           />
+          <Route
+            path="/home"
+            component={MobileLayout}
+          />
           <AuthorizedRoute
             path="/"
-            render={props => <MobileLayout {...props} />}
+            render={props => <BasicLayout {...props} />}
             authority={['admin', 'user']}
             redirectPath="/user/login"
           />

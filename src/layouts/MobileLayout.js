@@ -57,10 +57,10 @@ class MobileLayout extends React.PureComponent {
                 <Icon type="user" className={styles.icon} onClick={this.onOpenChange} />
               </div>
               <ul className={`${styles.cells} ${styles['header-nav']}`}>
-                <NavLink to="/deliver" activeClassName={styles.actives} ><li data-index="0" data-x="0" className="active">帮我送</li></NavLink>
-                <NavLink to="/get" activeClassName={styles.actives} ><li data-index="1" data-x="75">帮我取</li></NavLink>
-                <NavLink to="/buy" activeClassName={styles.actives} ><li data-index="2" data-x="150">帮我买</li></NavLink>
-                <NavLink to="/todo" activeClassName={styles.actives} ><li data-index="3" data-x="225">帮办事</li></NavLink>
+                <NavLink to="/home/deliver" activeClassName={styles.actives} ><li data-index="0" data-x="0" className="active">帮我送</li></NavLink>
+                <NavLink to="/home/get" activeClassName={styles.actives} ><li data-index="1" data-x="75">帮我取</li></NavLink>
+                <NavLink to="/home/buy" activeClassName={styles.actives} ><li data-index="2" data-x="150">帮我买</li></NavLink>
+                <NavLink to="/home/todo" activeClassName={styles.actives} ><li data-index="3" data-x="225">帮办事</li></NavLink>
               </ul>
               <div className={styles['right-btns']}>
                 <Icon type="message" className={styles.icon} />

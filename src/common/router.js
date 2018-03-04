@@ -164,18 +164,21 @@ export const getRouterData = (app) => {
     //   component: dynamicWrapper(app, [], () => import('../routes/User/SomeComponent')),
     // },
     '/': {// 挂载手机端主页布局
+      component: dynamicWrapper(app, [], () => import('../layouts/BlankLayout')),
+    },
+    '/home': {
       component: dynamicWrapper(app, [], () => import('../layouts/MobileLayout')),
     },
-    '/deliver': {
+    '/home/deliver': {
       component: dynamicWrapper(app, [], () => import('../routes/Deliver')),
     },
-    '/get': {
+    '/home/get': {
       component: dynamicWrapper(app, [], () => import('../routes/Get')),
     },
-    '/buy': {
+    '/home/buy': {
       component: dynamicWrapper(app, [], () => import('../routes/Buy')),
     },
-    '/todo': {
+    '/home/todo': {
       component: dynamicWrapper(app, [], () => import('../routes/Todo')),
     },
     '/map': {
