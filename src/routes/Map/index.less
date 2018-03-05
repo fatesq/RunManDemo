@@ -19,9 +19,19 @@
   position: relative;
   z-index: 999;
   /*-webkit-transition: all 0.2s;*/
+  .hidden {
+    height: 0;
+    top: 1px;
+  }
+  .showHideBtn {
+    /*  top: -30px;*/
+  }
+  .empty .showHideBtn {
+    opacity: 0.5;
+  }
 }
 
-#showHideBtn {
+.showHideBtn {
   display: block;
   position: absolute;
   width: 63px;
@@ -33,8 +43,8 @@
   top: -25px;
 }
 
-#showHideBtn:after,
-#showHideBtn:before {
+.showHideBtn:after,
+.showHideBtn:before {
   content: "";
   width: 0;
   height: 0;
@@ -45,7 +55,7 @@
   cursor: pointer;
 }
 
-#showHideBtn:before {
+.showHideBtn:before {
   width: 60px;
   height: 30px;
   background: rgba(255, 255, 255, 0.9);
@@ -55,7 +65,7 @@
   border-bottom: 0;
 }
 
-#showHideBtn:after {
+.showHideBtn:after {
   content: "";
   top: 7px;
   border: 10px solid rgba(255, 0, 0, 0);
@@ -64,50 +74,38 @@
   /* -webkit-transition: all 0.2s;*/
 }
 
-#poiList {
+.poiList {
   -webkit-overflow-scrolling: touch;
   width: 100%;
   height: 100%;
   overflow: scroll;
   position: relative;
   background: #fff;
-}
-
-#poiList .amap_lib_placeSearch {
-  border: none;
-}
-
-#panel.hidden {
-  height: 0;
-  top: 1px;
-}
-
-#panel.hidden #showHideBtn {
-  /*  top: -30px;*/
-}
-
-#panel.hidden #showHideBtn:after {
-  /*  -webkit-transform: rotate(180deg);
- -webkit-transform-origin: 50% 4px;*/
-  top: -5px;
-  border-bottom-color: #ccc;
-  border-top-color: transparent;
-}
-
-#panel .amap_lib_placeSearch .pageLink {
-  font-size: 120%;
-  margin: 0 3px;
+  .amap_lib_placeSearch {
+    border: none;
+    .pageLink {
+      font-size: 120%;
+      margin: 0 3px;
+    }
+  }
+  .hidden .showHideBtn:after {
+    /*  -webkit-transform: rotate(180deg);
+   -webkit-transform-origin: 50% 4px;*/
+    top: -5px;
+    border-bottom-color: #ccc;
+    border-top-color: transparent;
+  }
 }
 
 .searchBox {
   position: fixed;
-  width: 90%;
+  width: 100%;
   margin: 0 auto;
   left: 0;
   right: 0;
   z-index: 999;
-  top: 15px;
-  height: 30px;
+  top: 0;
+  height: auto;
 }
 
 .tipinput {
@@ -189,15 +187,13 @@
   opacity: 0.5;
 }
 
-#panel.empty #showHideBtn {
-  opacity: 0.5;
-}
+#panel
 
-#emptyTip {
+.emptyTip {
   display: none;
 }
 
-#panel.empty #emptyTip {
+.panel.empty .emptyTip {
   display: block;
   position: relative;
   background: #fff;
