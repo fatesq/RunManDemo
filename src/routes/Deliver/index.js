@@ -1,26 +1,38 @@
 import React from 'react';
 import { Icon, Form } from 'antd';
-import { WingBlank, Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio } from 'antd-mobile';
+import { WingBlank, Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio, Flex, Modal, Tag, Checkbox, DatePicker } from 'antd-mobile';
 import { Link } from 'dva/router';
 import styles from './index.less';
 
 
 const { Item } = List;
+const { Brief } = Item;
+const { AgreeItem } = Checkbox;
 const { RadioItem } = Radio;
 @Form.create()
 export default class Deliver extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      data: ['1', '2', '3'],
+      data: [1, 2, 3],
       imgHeight: 176,
-      tip: 0,
+      showInfo: false,
+      showInsured: false,
+      tip: 1,
     };
   }
   onChangeTip = (val) => {
     console.log(val);
     this.setState({ tip: val });
   }
+
+  handleShowBasic = () => {
+    this.setState({ showInfo: !this.state.showInfo });
+  }
+  handleShowInsured = () => {
+    this.setState({ showInsured: !this.state.showInsured });
+  }
+
   render() {
     const { getFieldProps, getFieldError } = this.props.form;
     return (
@@ -39,7 +51,7 @@ export default class Deliver extends React.PureComponent {
               style={{ display: 'inline-block', width: '100%', height: this.state.imgHeight }}
             >
               <img
-                src={`https://zos.alipayobjects.com/rmsportal/${val}.png`}
+                src="https://fe.imdada.cn/crane/1.10.13/images/bg.337719.jpg"
                 alt=""
                 style={{ width: '100%', verticalAlign: 'top' }}
                 onLoad={() => {
@@ -57,13 +69,119 @@ export default class Deliver extends React.PureComponent {
             <Link to="/map"><Item arrow="horizontal" onClick={() => {}}>物品寄到哪里去</Item></Link>
             <Item arrow="horizontal" onClick={() => {}}>物品从哪寄</Item>
             <Item align="top" multipleLine>
-              <div className={styles.center}><Icon type="clock-circle-o" /> 立刻发单</div>
+              <DatePicker
+                value={this.state.date}
+                onChange={date => console.log(date)}
+              >
+                <div className={styles.center}><Icon type="clock-circle-o" /> 立刻发单</div>
+              </DatePicker>
             </Item>
           </List>
           <WhiteSpace size="xs" />
           <List>
-            <Item> &nbsp;</Item>
-            <Item arrow="horizontal" onClick={() => {}}>保价</Item>
+            <Item onClick={this.handleShowBasic}>
+              选择物品信息
+              <Brief>
+                <Flex style={{ textAlign: 'center' }}>
+                  <Flex.Item className={styles.column} ><Icon type="appstore" /><span>其他</span></Flex.Item>
+                  <Flex.Item className={styles.column} ><Icon type="pay-circle" /><span>0-50</span></Flex.Item>
+                  <Flex.Item className={styles.column} ><Icon type="tag" /><span>1公斤</span></Flex.Item>
+                </Flex>
+              </Brief>
+            </Item>
+            <Modal
+              popup
+              visible={this.state.showInfo}
+              onClose={this.handleShowBasic}
+              animationType="slide-up"
+            >
+              <List
+                renderHeader={
+                  <Flex justify="between">
+                    <Flex.Item onClick={this.handleShowBasic}>取消</Flex.Item>
+                    <Flex.Item style={{ textAlign: 'center' }}>选择物品信息</Flex.Item >
+                    <Flex.Item style={{ textAlign: 'right' }}>确认</Flex.Item >
+                  </Flex>
+                }
+              >
+                <Item multipleLine>
+                  物品类型
+                  <Brief>
+                    <Flex wrap="wrap">
+                      {['文件', '鲜花', '蛋糕', '水果生鲜', '食品饮料', '其他'].map((i) => {
+                        return <Tag className={styles.goodsTag} key={i} >{i}</Tag>;
+                      })}
+                    </Flex>
+                  </Brief>
+                </Item>
+                <Item multipleLine>
+                  物品价值
+                  <Brief>
+                    <Flex wrap="wrap">
+                      {['0-50元', '50-100元', '100-300元', '300-500元', '500以上'].map((i) => {
+                        return <Tag className={styles.goodsTag} key={i} >{i}</Tag>;
+                      })}
+                    </Flex>
+                  </Brief>
+                </Item>
+                <Item multipleLine>
+                  物品重量
+                  <Brief style={{ textAlign: 'center' }}>
+                    <Stepper
+                      style={{ width: '100%', maxWidth: '50%' }}
+                      showNumber
+                      min={1}
+                      max={15}
+                      value={this.state.tip}
+                      onChange={this.onChangeTip}
+                    />
+                    <div>5公斤以内不加价（最大15公斤）</div>
+                  </Brief>
+                </Item>
+              </List>
+            </Modal>
+            <Item arrow="horizontal" extra="贵重物品选择保价" onClick={this.handleShowInsured}>保价</Item>
+            <Modal
+              popup
+              visible={this.state.showInsured}
+              onClose={this.handleShowInsured}
+              animationType="slide-up"
+            >
+              <List
+                renderHeader={
+                  <Flex justify="between">
+                    <Flex.Item onClick={this.handleShowInsured}>取消</Flex.Item>
+                    <Flex.Item style={{ textAlign: 'center' }}>选择物品信息</Flex.Item >
+                    <Flex.Item style={{ textAlign: 'right' }}>确认</Flex.Item >
+                  </Flex>
+                }
+              >
+                <Item>
+                  5.00元保价
+                  <Brief>
+                  若商品出现损坏或丢失,最高可获得1000.00元赔付
+                  </Brief>
+                </Item>
+                <Item>
+                  5.00元保价
+                  <Brief>
+                  若商品出现损坏或丢失,最高可获得1000.00元赔付
+                  </Brief>
+                </Item>
+                <Item>
+                  5.00元保价
+                  <Brief>
+                  若商品出现损坏或丢失,最高可获得1000.00元赔付
+                  </Brief>
+                </Item>
+                <Item >
+                  <AgreeItem style={{ textAlign: 'center' }} data-seed="logId" onChange={e => console.log('checkbox', e)}>
+                    我已阅读并同意<a onClick={(e) => { e.preventDefault(); alert('agree it'); }}>《物品保价协议》</a>
+                  </AgreeItem>
+                  <Brief style={{ textAlign: 'center' }}>赔付金额以物品实际价格凭证为准,<br /> 不超过所选保价方案赔付金额</Brief>
+                </Item>
+              </List>
+            </Modal>
             <Item
               extra={
                 <Switch

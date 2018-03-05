@@ -12,45 +12,23 @@ const { RadioItem } = Radio;
 export default class Buy extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {
-      data: ['1', '2', '3'],
-      imgHeight: 176,
-      tip: 0,
-    };
-  }
-  onChangeTip = (val) => {
-    console.log(val);
-    this.setState({ tip: val });
+    this.state = {};
   }
   render() {
     const { getFieldProps, getFieldError } = this.props.form;
     return (
       <div>
-        <Carousel
-          autoplay={false}
-          infinite
-          selectedIndex={1}
-          beforeChange={(from, to) => console.log(`slide from ${from} to ${to}`)}
-          afterChange={index => console.log('slide to', index)}
-        >
-          {this.state.data.map(val => (
-            <a
-              key={val}
-              href="http://www.alipay.com"
-              style={{ display: 'inline-block', width: '100%', height: this.state.imgHeight }}
-            >
-              <img
-                src={`https://zos.alipayobjects.com/rmsportal/${val}.png`}
-                alt=""
-                style={{ width: '100%', verticalAlign: 'top' }}
-                onLoad={() => {
-                  // fire window resize event to change height
-                  window.dispatchEvent(new Event('resize'));
-                  this.setState({ imgHeight: 'auto' });
-                }}
-              />
-            </a>
-          ))}
+        <Carousel>
+          <a style={{ display: 'inline-block', width: '100%', height: 'auto' }}>
+            <img
+              src="https://fe.imdada.cn/crane/1.10.13/images/bg.337719.jpg"
+              alt=""
+              style={{ width: '100%', verticalAlign: 'top' }}
+              onLoad={() => {
+                window.dispatchEvent(new Event('resize'));
+              }}
+            />
+          </a>
         </Carousel>
         <WingBlank>
           <List>
