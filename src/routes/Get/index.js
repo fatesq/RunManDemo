@@ -1,6 +1,6 @@
 import React from 'react';
 import { Icon, Form } from 'antd';
-import { WingBlank, Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio } from 'antd-mobile';
+import { WingBlank, Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio, Flex, Modal, Checkbox, DatePicker } from 'antd-mobile';
 import { Link } from 'dva/router';
 import styles from './index.less';
 
@@ -8,11 +8,22 @@ import styles from './index.less';
 const { Item } = List;
 const { Brief } = Item;
 const { RadioItem } = Radio;
+const { AgreeItem } = Checkbox;
 @Form.create()
 export default class Get extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      showInfo: false,
+      showInsured: false,
+      tip: 1,
+    };
+  }
+  handleShowBasic = () => {
+    this.setState({ showInfo: !this.state.showInfo });
+  }
+  handleShowInsured = () => {
+    this.setState({ showInsured: !this.state.showInsured });
   }
   render() {
     const { getFieldProps, getFieldError } = this.props.form;
@@ -36,7 +47,12 @@ export default class Get extends React.PureComponent {
             <Link to="/map"><Item arrow="horizontal" onClick={() => {}}>物品寄到哪里去</Item></Link>
             <Item arrow="horizontal" onClick={() => {}}>物品从哪寄</Item>
             <Item align="top" multipleLine>
-              <div className={styles.center}><Icon type="clock-circle-o" /> 立刻发单</div>
+              <DatePicker
+                value={this.state.date}
+                onChange={date => console.log(date)}
+              >
+                <div className={styles.center}><Icon type="clock-circle-o" /> 立刻发单</div>
+              </DatePicker>
             </Item>
           </List>
           <WhiteSpace size="xs" />
@@ -54,7 +70,48 @@ export default class Get extends React.PureComponent {
             >
               物品重量
             </Item>
-            <Item arrow="horizontal" onClick={() => {}}>保价</Item>
+            <Item arrow="horizontal" onClick={this.handleShowInsured}>保价</Item>
+            <Modal
+              popup
+              visible={this.state.showInsured}
+              onClose={this.handleShowInsured}
+              animationType="slide-up"
+            >
+              <List
+                renderHeader={
+                  <Flex justify="between">
+                    <Flex.Item onClick={this.handleShowInsured}>取消</Flex.Item>
+                    <Flex.Item style={{ textAlign: 'center' }}>选择物品信息</Flex.Item >
+                    <Flex.Item style={{ textAlign: 'right' }}>确认</Flex.Item >
+                  </Flex>
+                }
+              >
+                <Item>
+                  5.00元保价
+                  <Brief>
+                  若商品出现损坏或丢失,最高可获得1000.00元赔付
+                  </Brief>
+                </Item>
+                <Item>
+                  5.00元保价
+                  <Brief>
+                  若商品出现损坏或丢失,最高可获得1000.00元赔付
+                  </Brief>
+                </Item>
+                <Item>
+                  5.00元保价
+                  <Brief>
+                  若商品出现损坏或丢失,最高可获得1000.00元赔付
+                  </Brief>
+                </Item>
+                <Item >
+                  <AgreeItem style={{ textAlign: 'center' }} data-seed="logId" onChange={e => console.log('checkbox', e)}>
+                    我已阅读并同意<a onClick={(e) => { e.preventDefault(); alert('agree it'); }}>《物品保价协议》</a>
+                  </AgreeItem>
+                  <Brief style={{ textAlign: 'center' }}>赔付金额以物品实际价格凭证为准,<br /> 不超过所选保价方案赔付金额</Brief>
+                </Item>
+              </List>
+            </Modal>
             <Item
               extra={
                 <Switch
