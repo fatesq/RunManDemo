@@ -1,13 +1,17 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom';
-import { SearchBar, ActionSheet, Icon } from 'antd-mobile';
+import { SearchBar, Modal, Icon } from 'antd-mobile';
 import styles from './index.less';
 
 export default class SearchBox extends React.PureComponent {
   constructor(props) {
     super(props);
     this.map = this.props.__map__; // 接收地图实例
+    this.state = {
+      showInsured: false,
+    };
   }
+
   componentDidMount() {
     window.AMap.service(['AMap.PlaceSearch', 'AMap.Autocomplete', 'AMap.Geolocation'], () => {
       try {
@@ -32,6 +36,7 @@ export default class SearchBox extends React.PureComponent {
       placeSearch.search(e.poi.name, (status, results) => {
         console.log(status, results);
         // this.showActionSheet(results);
+        // this.handleShowInsured();
         if (results.pois && results.pois.length > 0) {
           console.log(results);
         }
@@ -39,6 +44,10 @@ export default class SearchBox extends React.PureComponent {
     });
     AMap.event.addListener(geolocation, 'complete', (e) => { console.log(e); }); // 返回定位信息
     AMap.event.addListener(geolocation, 'error', (e) => { console.log(e); }); // 返回定位出错信息
+  }
+
+  handleShowInsured = () => {
+    this.setState({ showInsured: !this.state.showInsured });
   }
 
   render() {
@@ -57,6 +66,13 @@ export default class SearchBox extends React.PureComponent {
           <div id="emptyTip">没有内容！</div>
           <div id="poiList" className={styles.poiList} />
         </div>
+        {/* {<Modal
+          popup
+          visible={this.state.showInsured}
+          onClose={this.handleShowInsured}
+          animationType="slide-up"
+        >
+        </Modal>} */}
       </div>
     );
   }

@@ -16,25 +16,26 @@ class MobileLayout extends React.PureComponent {
   render() {
     const sidebar = (
       <List>
-        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15].map((i, index) => {
-          if (index === 0) {
-            return (
-              <List.Item
-                key={index}
-                thumb="https://zos.alipayobjects.com/rmsportal/eOZidTabPoEbPeU.png"
-                multipleLine
-              >Category
-              </List.Item>
-            );
-          }
-          return (
-            <List.Item
-              key={index}
-              thumb="https://zos.alipayobjects.com/rmsportal/eOZidTabPoEbPeU.png"
-            >Category{index}
-            </List.Item>
-          );
-        })}
+        <List.Item
+          thumb="https://zos.alipayobjects.com/rmsportal/eOZidTabPoEbPeU.png"
+          multipleLine
+        >15850777777
+        </List.Item>
+        <List.Item>
+          <NavLink to="/coupon">优惠券与管理</NavLink>
+        </List.Item>
+        <List.Item>
+          <NavLink to="/bills">发票与报销</NavLink>
+        </List.Item>
+        <List.Item>
+          <NavLink to="/order">我的订单</NavLink>
+        </List.Item>
+        <List.Item>
+          运费说明
+        </List.Item>
+        <List.Item>
+          意见反馈
+        </List.Item>
       </List>
     );
     const { routerData, match } = this.props;
@@ -50,24 +51,6 @@ class MobileLayout extends React.PureComponent {
           //   <SegmentedControl values={['帮我送', '帮我取', '帮我买', '帮办事']} style={{ width: '100%' }} />
           // </NavBar>
         }
-        <div className={styles['detail-header-bg']}>
-          <div id="head" className={styles['header-dom']}>
-            <div className={`${styles['mui-flex']} ${styles['main-dom']}`}>
-              <div className={styles['left-btns']}>
-                <Icon type="user" className={styles.icon} onClick={this.onOpenChange} />
-              </div>
-              <ul className={`${styles.cells} ${styles['header-nav']}`}>
-                <NavLink to="/home/deliver" activeClassName={styles.actives} ><li data-index="0" data-x="0" className="active">帮我送</li></NavLink>
-                <NavLink to="/home/get" activeClassName={styles.actives} ><li data-index="1" data-x="75">帮我取</li></NavLink>
-                <NavLink to="/home/buy" activeClassName={styles.actives} ><li data-index="2" data-x="150">帮我买</li></NavLink>
-                <NavLink to="/home/todo" activeClassName={styles.actives} ><li data-index="3" data-x="225">帮办事</li></NavLink>
-              </ul>
-              <div className={styles['right-btns']}>
-                <Icon type="message" className={styles.icon} />
-              </div>
-            </div>
-          </div>
-        </div>
         <Drawer
           className={styles.myDrawer}
           style={{ minHeight: document.documentElement.clientHeight }}
@@ -76,6 +59,24 @@ class MobileLayout extends React.PureComponent {
           open={this.state.open}
           onOpenChange={this.onOpenChange}
         >
+          <div className={styles['detail-header-bg']}>
+            <div id="head" className={styles['header-dom']}>
+              <div className={`${styles['mui-flex']} ${styles['main-dom']}`}>
+                <div className={styles['left-btns']}>
+                  <Icon type="user" className={styles.icon} onClick={this.onOpenChange} />
+                </div>
+                <ul className={`${styles.cells} ${styles['header-nav']}`}>
+                  <NavLink to="/home/deliver" activeClassName={styles.actives} ><li data-index="0" data-x="0" className="active">帮我送</li></NavLink>
+                  <NavLink to="/home/get" activeClassName={styles.actives} ><li data-index="1" data-x="75">帮我取</li></NavLink>
+                  <NavLink to="/home/buy" activeClassName={styles.actives} ><li data-index="2" data-x="150">帮我买</li></NavLink>
+                  <NavLink to="/home/todo" activeClassName={styles.actives} ><li data-index="3" data-x="225">帮办事</li></NavLink>
+                </ul>
+                <div className={styles['right-btns']}>
+                  <Icon type="message" className={styles.icon} />
+                </div>
+              </div>
+            </div>
+          </div>
           <Switch>
             {getRoutes(match.path, routerData).map(item =>
               (
