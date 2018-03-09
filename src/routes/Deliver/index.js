@@ -70,6 +70,8 @@ export default class Deliver extends React.PureComponent {
             <Item arrow="horizontal" onClick={() => {}}>物品从哪寄</Item>
             <Item align="top" multipleLine>
               <DatePicker
+                okText="确定"
+                dismissText="取消"
                 value={this.state.date}
                 onChange={date => console.log(date)}
               >

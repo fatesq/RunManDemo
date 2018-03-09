@@ -1,18 +1,30 @@
 import React from 'react';
 import { Icon, Form } from 'antd';
-import { WingBlank, Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio, Tag } from 'antd-mobile';
+import { WingBlank, Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio, Tag, Flex, DatePicker, Modal, Checkbox } from 'antd-mobile';
 import { Link } from 'dva/router';
 import styles from './index.less';
 
 
 const { Item } = List;
 const { Brief } = Item;
+const { AgreeItem } = Checkbox;
 const { RadioItem } = Radio;
 @Form.create()
 export default class Buy extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      showInsured: false,
+      tip: 1,
+    };
+  }
+
+  onChangeTip = (val) => {
+    console.log(val);
+    this.setState({ tip: val });
+  }
+  handleShowInsured = () => {
+    this.setState({ showInsured: !this.state.showInsured });
   }
   render() {
     const { getFieldProps, getFieldError } = this.props.form;
@@ -36,22 +48,67 @@ export default class Buy extends React.PureComponent {
             <Link to="/map"><Item arrow="horizontal" onClick={() => {}}>物品寄到哪里去</Item></Link>
             <Item arrow="horizontal" onClick={() => {}}>物品从哪寄</Item>
             <Item align="top" multipleLine>
-              <div className={styles.center}><Icon type="clock-circle-o" /> 立刻发单</div>
+              <DatePicker
+                okText="确定"
+                dismissText="取消"
+                value={this.state.date}
+                onChange={date => console.log(date)}
+              >
+                <div className={styles.center}><Icon type="clock-circle-o" /> 立刻发单</div>
+              </DatePicker>
             </Item>
           </List>
           <WhiteSpace size="xs" />
           <List>
             <div className={styles['tag-container']}>
-              <Tag data-seed="logId">随意购</Tag>
-              <Tag selected>超市代购</Tag>
-              <Tag >买烟买酒</Tag>
-              <Tag >日常用品</Tag>
-              <Tag >买早餐</Tag>
-              <Tag >买夜宵</Tag>
-              <Tag >买水果</Tag>
-              <Tag >买药品</Tag>
+              <Flex wrap="wrap">
+                {['随意购', '超市代购', '买烟买酒', '日常用品', '买早餐', '买宵夜', '买水果', '买药品'].map((i) => {
+                  return <Tag className={styles.goodsTag} key={i} >{i}</Tag>;
+                })}
+              </Flex>
             </div>
-            <Item arrow="horizontal" onClick={() => {}}>保价</Item>
+            <Item arrow="horizontal" onClick={this.handleShowInsured}>保价</Item>
+            <Modal
+              popup
+              visible={this.state.showInsured}
+              onClose={this.handleShowInsured}
+              animationType="slide-up"
+            >
+              <List
+                renderHeader={
+                  <Flex justify="between">
+                    <Flex.Item onClick={this.handleShowInsured}>取消</Flex.Item>
+                    <Flex.Item style={{ textAlign: 'center' }}>选择物品信息</Flex.Item >
+                    <Flex.Item style={{ textAlign: 'right' }}>确认</Flex.Item >
+                  </Flex>
+                }
+              >
+                <Item>
+                  5.00元保价
+                  <Brief>
+                  若商品出现损坏或丢失,最高可获得1000.00元赔付
+                  </Brief>
+                </Item>
+                <Item>
+                  5.00元保价
+                  <Brief>
+                  若商品出现损坏或丢失,最高可获得1000.00元赔付
+                  </Brief>
+                </Item>
+                <Item>
+                  5.00元保价
+                  <Brief>
+                  若商品出现损坏或丢失,最高可获得1000.00元赔付
+                  </Brief>
+                </Item>
+                <Item >
+                  <AgreeItem style={{ textAlign: 'center' }} data-seed="logId" onChange={e => console.log('checkbox', e)}>
+                    我已阅读并同意<a onClick={(e) => { e.preventDefault(); alert('agree it'); }}>《物品保价协议》</a>
+                  </AgreeItem>
+                  <Brief style={{ textAlign: 'center' }}>赔付金额以物品实际价格凭证为准,<br /> 不超过所选保价方案赔付金额</Brief>
+                </Item>
+              </List>
+            </Modal>
             <Item
               extra={
                 <Switch

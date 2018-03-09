@@ -1,18 +1,28 @@
 import React from 'react';
 import { Icon, Form } from 'antd';
-import { WingBlank, Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio } from 'antd-mobile';
+import { WingBlank, Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio, Flex, Modal, Checkbox, DatePicker } from 'antd-mobile';
 import { Link } from 'dva/router';
 import styles from './index.less';
 
 
 const { Item } = List;
 const { Brief } = Item;
+const { AgreeItem } = Checkbox;
 const { RadioItem } = Radio;
 @Form.create()
 export default class Todo extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      showInsured: false,
+      radio: 1,
+    };
+  }
+  onRadioChange = (radio) => {
+    this.setState({ radio });
+  }
+  handleShowInsured = () => {
+    this.setState({ showInsured: !this.state.showInsured });
   }
   render() {
     const { getFieldProps, getFieldError } = this.props.form;
@@ -33,16 +43,95 @@ export default class Todo extends React.PureComponent {
         <WingBlank>
           <List>
             <Item><div className={styles.center}>附近有 <a>3</a> 位跑男为您服务</div></Item>
-            <Link to="/map"><Item arrow="horizontal" onClick={() => {}}>物品寄到哪里去</Item></Link>
-            <Item arrow="horizontal" onClick={() => {}}>物品从哪寄</Item>
-            <Item align="top" multipleLine>
-              <div className={styles.center}><Icon type="clock-circle-o" /> 立刻发单</div>
+            <Item>
+              <Flex>
+                <Flex.Item>
+                  <Radio checked={this.state.radio === 0} name="logId" onChange={() => this.onRadioChange(0)}>
+                    需要取资料
+                  </Radio>
+                </Flex.Item>
+                <Flex.Item style={{ textAlign: 'right' }}>
+                  <Radio className={styles['my-radio']} checked={this.state.radio === 1} name="logId" onChange={() => this.onRadioChange(1)}>
+                    不需要取资料
+                  </Radio>
+                </Flex.Item>
+              </Flex>
             </Item>
+            {this.state.radio === 0 ? <Item arrow="horizontal" onClick={() => {}}>取资料地址</Item> : ''}
+            <Link to="/map"><Item arrow="horizontal" onClick={() => {}}>填写办事地址</Item></Link>
+            <Item align="top" multipleLine>
+              <DatePicker
+                okText="确定"
+                dismissText="取消"
+                value={this.state.date}
+                onChange={date => console.log(date)}
+              >
+                <div className={styles.center}><Icon type="clock-circle-o" /> 立刻发单</div>
+              </DatePicker>
+            </Item>
+            <InputItem
+              {...getFieldProps('account', {
+                // initialValue: 'little ant',
+                rules: [
+                  { required: true, message: 'Please input account' },
+                  { validator: this.validateAccount },
+                ],
+              })}
+              clear
+              error={!!getFieldError('account')}
+              onErrorClick={() => {
+                alert(getFieldError('account').join('、'));
+              }}
+              placeholder="输入时间不少于"
+              extra="min"
+            >购买时长
+            </InputItem>
           </List>
           <WhiteSpace size="xs" />
           <List>
             <Item> &nbsp;</Item>
-            <Item arrow="horizontal" onClick={() => {}}>保价</Item>
+            <Item arrow="horizontal" onClick={this.handleShowInsured}>保价</Item>
+            <Modal
+              popup
+              visible={this.state.showInsured}
+              onClose={this.handleShowInsured}
+              animationType="slide-up"
+            >
+              <List
+                renderHeader={
+                  <Flex justify="between">
+                    <Flex.Item onClick={this.handleShowInsured}>取消</Flex.Item>
+                    <Flex.Item style={{ textAlign: 'center' }}>选择物品信息</Flex.Item >
+                    <Flex.Item style={{ textAlign: 'right' }}>确认</Flex.Item >
+                  </Flex>
+                }
+              >
+                <Item>
+                  5.00元保价
+                  <Brief>
+                  若商品出现损坏或丢失,最高可获得1000.00元赔付
+                  </Brief>
+                </Item>
+                <Item>
+                  5.00元保价
+                  <Brief>
+                  若商品出现损坏或丢失,最高可获得1000.00元赔付
+                  </Brief>
+                </Item>
+                <Item>
+                  5.00元保价
+                  <Brief>
+                  若商品出现损坏或丢失,最高可获得1000.00元赔付
+                  </Brief>
+                </Item>
+                <Item >
+                  <AgreeItem style={{ textAlign: 'center' }} data-seed="logId" onChange={e => console.log('checkbox', e)}>
+                    我已阅读并同意<a onClick={(e) => { e.preventDefault(); alert('agree it'); }}>《物品保价协议》</a>
+                  </AgreeItem>
+                  <Brief style={{ textAlign: 'center' }}>赔付金额以物品实际价格凭证为准,<br /> 不超过所选保价方案赔付金额</Brief>
+                </Item>
+              </List>
+            </Modal>
             <Item
               extra={
                 <Switch

@@ -14,13 +14,18 @@ export default class Get extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      showInfo: false,
       showInsured: false,
       tip: 1,
+      weight: 1,
     };
   }
-  handleShowBasic = () => {
-    this.setState({ showInfo: !this.state.showInfo });
+  onChangeWeight = (val) => {
+    console.log(val);
+    this.setState({ weight: val });
+  }
+  onChangeTip = (val) => {
+    console.log(val);
+    this.setState({ tip: val });
   }
   handleShowInsured = () => {
     this.setState({ showInsured: !this.state.showInsured });
@@ -48,6 +53,8 @@ export default class Get extends React.PureComponent {
             <Item arrow="horizontal" onClick={() => {}}>物品从哪寄</Item>
             <Item align="top" multipleLine>
               <DatePicker
+                okText="确定"
+                dismissText="取消"
                 value={this.state.date}
                 onChange={date => console.log(date)}
               >
@@ -63,8 +70,8 @@ export default class Get extends React.PureComponent {
                   style={{ width: '100%', minWidth: '100px' }}
                   showNumber
                   min={0}
-                  value={this.state.tip}
-                  onChange={this.onChangeTip}
+                  value={this.state.weight}
+                  onChange={this.onChangeWeight}
                 />
               }
             >
