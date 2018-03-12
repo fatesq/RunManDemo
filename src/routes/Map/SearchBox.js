@@ -10,10 +10,15 @@ export default class SearchBox extends React.PureComponent {
   constructor(props) {
     super(props);
     this.map = this.props.__map__; // 接收地图实例
+    const dataSource = new ListView.DataSource({
+      rowHasChanged: (row1, row2) => row1 !== row2,
+    });
     this.state = {
       showInsured: false,
       text: '',
       list: [],
+      dataSource,
+      isLoading: true,
     };
   }
 
@@ -58,7 +63,11 @@ export default class SearchBox extends React.PureComponent {
         // this.showActionSheet(results);
         this.handleShowInsured();
         if (results.poiList.pois && results.poiList.pois.length > 0) {
-          this.setState({ list: results.poiList.pois });
+          this.setState({
+            list: results.poiList.pois,
+            dataSource: this.state.dataSource.cloneWithRows(this.rData),
+            isLoading: false,
+          });
         }
       });
     });
@@ -70,8 +79,25 @@ export default class SearchBox extends React.PureComponent {
     this.setState({ showInsured: !this.state.showInsured });
   }
 
+  handleEndReached = (event) => {
+    // load new data
+    // hasMore: from backend data, indicates whether it is the last page, here is false
+    if (this.state.isLoading && !this.state.hasMore) {
+      return;
+    }
+    console.log('reach end', event);
+    this.setState({ isLoading: true });
+    // setTimeout(() => {
+    //   this.rData = { ...this.rData, ...genData(++pageIndex) };
+    //   this.setState({
+    //     dataSource: this.state.dataSource.cloneWithRows(this.rData),
+    //     isLoading: false,
+    //   });
+    // }, 1000);
+  }
+
   render() {
-    console.log(this.map);
+    console.log(this.state.dataSource);
     return (
       <div>
         <div className={styles.searchBox}>
@@ -96,30 +122,25 @@ export default class SearchBox extends React.PureComponent {
             onClose={this.handleShowInsured}
             animationType="slide-up"
           >
-            <List>
-              {
-                this.state.list.map((item) => {
-                  return (
-                    <Item arrow="horizontal" multipleLine onClick={() => {}}>
-                      {item.name}<Brief>{item.pname + item.cityname + item.adname + item.address }</Brief>
-                    </Item>
-                  );
-                })
-              }
-            </List>
             <ListView
               ref={el => this.lv = el}
               dataSource={this.state.dataSource}
-              renderHeader={() => <span>header</span>}
-              renderFooter={() => (<div style={{ padding: 30, textAlign: 'center' }}>
-                {this.state.isLoading ? 'Loading...' : 'Loaded'}
-              </div>)}
-              renderSectionHeader={sectionData => (
-                <div>{`Task ${sectionData.split(' ')[1]}`}</div>
+              renderFooter={() => (
+                <div style={{ padding: 30, textAlign: 'center' }}>
+                  {this.state.isLoading ? 'Loading...' : 'Loaded'}
+                </div>
               )}
-              renderBodyComponent={() => <MyBody />}
-              renderRow={row}
-              renderSeparator={separator}
+              renderRow={(rowData, sectionID, rowID) => {
+                console.log(rowData, sectionID, rowID, 'row');
+                return (
+                  <Item key={rowID} arrow="horizontal" multipleLine onClick={() => {}}>
+                    {rowData.name}
+                    <Brief>
+                      {rowData.pname + rowData.cityname + rowData.adname + rowData.address }
+                    </Brief>
+                  </Item>
+                );
+              }}
               style={{
                 height: this.state.height,
                 overflow: 'auto',
@@ -127,7 +148,7 @@ export default class SearchBox extends React.PureComponent {
               pageSize={4}
               onScroll={() => { console.log('scroll'); }}
               scrollRenderAheadDistance={500}
-              onEndReached={this.onEndReached}
+              onEndReached={this.handleEndReached}
               onEndReachedThreshold={10}
             />
           </Modal>
