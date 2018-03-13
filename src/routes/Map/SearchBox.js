@@ -6,12 +6,70 @@ import styles from './index.less';
 const { Item } = List;
 const { Brief } = Item;
 
+function MyBody(props) {
+  return (
+    <div className="am-list-body my-body">
+      <span style={{ display: 'none' }}>you can custom body wrap element</span>
+      {props.children}
+    </div>
+  );
+}
+
+const data = [
+  {
+    img: 'https://zos.alipayobjects.com/rmsportal/dKbkpPXKfvZzWCM.png',
+    title: 'Meet hotel',
+    des: '不是所有的兼职汪都需要风吹日晒',
+  },
+  {
+    img: 'https://zos.alipayobjects.com/rmsportal/XmwCzSeJiqpkuMB.png',
+    title: 'McDonald\'s invites you',
+    des: '不是所有的兼职汪都需要风吹日晒',
+  },
+  {
+    img: 'https://zos.alipayobjects.com/rmsportal/hfVtzEhPzTUewPm.png',
+    title: 'Eat the week',
+    des: '不是所有的兼职汪都需要风吹日晒',
+  },
+];
+const NUM_SECTIONS = 5;
+const NUM_ROWS_PER_SECTION = 5;
+let pageIndex = 0;
+
+const dataBlobs = {};
+let sectionIDs = [];
+let rowIDs = [];
+function genData(pIndex = 0) {
+  for (let i = 0; i < NUM_SECTIONS; i++) {
+    const ii = (pIndex * NUM_SECTIONS) + i;
+    const sectionName = `Section ${ii}`;
+    sectionIDs.push(sectionName);
+    dataBlobs[sectionName] = sectionName;
+    rowIDs[ii] = [];
+
+    for (let jj = 0; jj < NUM_ROWS_PER_SECTION; jj++) {
+      const rowName = `S${ii}, R${jj}`;
+      rowIDs[ii].push(rowName);
+      dataBlobs[rowName] = rowName;
+    }
+  }
+  sectionIDs = [...sectionIDs];
+  rowIDs = [...rowIDs];
+}
+
+
 export default class SearchBox extends React.PureComponent {
   constructor(props) {
     super(props);
     this.map = this.props.__map__; // 接收地图实例
+    const getSectionData = (dataBlob, sectionID) => dataBlob[sectionID];
+    const getRowData = (dataBlob, sectionID, rowID) => dataBlob[rowID];
+
     const dataSource = new ListView.DataSource({
+      getRowData,
+      getSectionHeaderData: getSectionData,
       rowHasChanged: (row1, row2) => row1 !== row2,
+      sectionHeaderHasChanged: (s1, s2) => s1 !== s2,
     });
     this.state = {
       showInsured: false,
@@ -19,6 +77,8 @@ export default class SearchBox extends React.PureComponent {
       list: [],
       dataSource,
       isLoading: true,
+      height: document.documentElement.clientHeight * (3 / 4),
+      hasMore: false,
     };
   }
 
@@ -31,6 +91,17 @@ export default class SearchBox extends React.PureComponent {
         console.error(e);
       }
     });
+
+    const hei = document.documentElement.clientHeight * (40 / 100);
+    // simulate initial Ajax
+    setTimeout(() => {
+      genData();
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRowsAndSections(dataBlobs, sectionIDs, rowIDs),
+        isLoading: false,
+        height: hei,
+      });
+    }, 600);
   }
 
   ready = () => {
@@ -63,11 +134,11 @@ export default class SearchBox extends React.PureComponent {
         // this.showActionSheet(results);
         this.handleShowInsured();
         if (results.poiList.pois && results.poiList.pois.length > 0) {
-          this.setState({
-            list: results.poiList.pois,
-            dataSource: this.state.dataSource.cloneWithRows(this.rData),
-            isLoading: false,
-          });
+          // this.setState({
+          //   list: results.poiList.pois,
+          //   // dataSource: this.state.dataSource.cloneWithRows(this.rData),
+          //   isLoading: false,
+          // });
         }
       });
     });
@@ -82,22 +153,62 @@ export default class SearchBox extends React.PureComponent {
   handleEndReached = (event) => {
     // load new data
     // hasMore: from backend data, indicates whether it is the last page, here is false
+    console.log(this.state.isLoading && !this.state.hasMore);
     if (this.state.isLoading && !this.state.hasMore) {
       return;
     }
     console.log('reach end', event);
     this.setState({ isLoading: true });
-    // setTimeout(() => {
-    //   this.rData = { ...this.rData, ...genData(++pageIndex) };
-    //   this.setState({
-    //     dataSource: this.state.dataSource.cloneWithRows(this.rData),
-    //     isLoading: false,
-    //   });
-    // }, 1000);
+    setTimeout(() => {
+      genData(++pageIndex);
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRowsAndSections(dataBlobs, sectionIDs, rowIDs),
+        isLoading: false,
+      });
+    }, 1000);
   }
 
   render() {
-    console.log(this.state.dataSource);
+    console.log(this.state.dataSource, 233);
+    const separator = (sectionID, rowID) => (
+      <div
+        key={`${sectionID}-${rowID}`}
+        style={{
+          backgroundColor: '#F5F5F9',
+          height: 8,
+          borderTop: '1px solid #ECECED',
+          borderBottom: '1px solid #ECECED',
+        }}
+      />
+    );
+    let index = data.length - 1;
+    const row = (rowData, sectionID, rowID) => {
+      if (index < 0) {
+        index = data.length - 1;
+      }
+      const obj = data[index--];
+      return (
+        <div key={rowID} style={{ padding: '0 15px' }}>
+          <div
+            style={{
+              lineHeight: '50px',
+              color: '#888',
+              fontSize: 18,
+              borderBottom: '1px solid #F6F6F6',
+            }}
+          >{obj.title}
+          </div>
+          <div style={{ display: '-webkit-box', display: 'flex', padding: '15px 0' }}>
+            <img style={{ height: '64px', marginRight: '15px' }} src={obj.img} alt="" />
+            <div style={{ lineHeight: 1 }}>
+              <div style={{ marginBottom: '8px', fontWeight: 'bold' }}>{obj.des}</div>
+              <div><span style={{ fontSize: '30px', color: '#FF6E27' }}>35</span>¥ {rowID}</div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+
     return (
       <div>
         <div className={styles.searchBox}>
@@ -110,11 +221,13 @@ export default class SearchBox extends React.PureComponent {
             }
           />
         </div>
-        <div id="panel" className={styles.panel}>
-          <a className={styles.showHideBtn}>&nbsp;</a>
-          <div id="emptyTip">没有内容！</div>
-          <div id="poiList">没有内容！</div>
-        </div>
+        {
+          // <div id="panel" className={styles.panel}>
+          //   <a className={styles.showHideBtn}>&nbsp;</a>
+          //   <div id="emptyTip">没有内容！</div>
+          //   <div id="poiList">没有内容！</div>
+          // </div>
+        }
         {
           <Modal
             popup
@@ -127,20 +240,14 @@ export default class SearchBox extends React.PureComponent {
               dataSource={this.state.dataSource}
               renderFooter={() => (
                 <div style={{ padding: 30, textAlign: 'center' }}>
-                  {this.state.isLoading ? 'Loading...' : 'Loaded'}
-                </div>
+                  {this.state.isLoading ? '加载中...' : '没有更多信息'}
+                </div>)}
+              renderSectionHeader={sectionData => (
+                <div>{`Task ${sectionData.split(' ')[1]}`}</div>
               )}
-              renderRow={(rowData, sectionID, rowID) => {
-                console.log(rowData, sectionID, rowID, 'row');
-                return (
-                  <Item key={rowID} arrow="horizontal" multipleLine onClick={() => {}}>
-                    {rowData.name}
-                    <Brief>
-                      {rowData.pname + rowData.cityname + rowData.adname + rowData.address }
-                    </Brief>
-                  </Item>
-                );
-              }}
+              renderBodyComponent={() => <MyBody />}
+              renderRow={row}
+              renderSeparator={separator}
               style={{
                 height: this.state.height,
                 overflow: 'auto',
