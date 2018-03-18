@@ -1,14 +1,24 @@
 import React from 'react';
+import { connect } from 'dva';
 import { Icon } from 'antd';
 import { SegmentedControl, NavBar, Drawer, List } from 'antd-mobile';
 import { Route, Redirect, Switch, NavLink } from 'dva/router';
 import { getRoutes } from '../utils/utils';
 import styles from './MobileLayout.less';
 
+
+@connect(({ global, loading }) => ({
+  global,
+  submitting: loading.effects['login/login'],
+}))
 class MobileLayout extends React.PureComponent {
   state = {
     open: false,
   }
+  componentDidMount() {
+    this.props.dispatch({ type: 'global/weixinConfig' });
+  }
+
   onOpenChange = () => {
     this.setState({ open: !this.state.open });
   }

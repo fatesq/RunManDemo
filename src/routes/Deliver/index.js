@@ -19,6 +19,8 @@ export default class Deliver extends React.PureComponent {
       showInfo: false,
       showInsured: false,
       tip: 1,
+      orderType: 1, // 帮我送
+      payType: 2, // 支付类型:微信
     };
   }
   onChangeTip = (val) => {
@@ -31,6 +33,28 @@ export default class Deliver extends React.PureComponent {
   }
   handleShowInsured = () => {
     this.setState({ showInsured: !this.state.showInsured });
+  }
+
+  handleShowMap = () => {
+    window.wx.getLocation({
+      type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+      success: (res) => {
+        const { latitude, longitude, speed, accuracy } = res;
+        console.log(res);
+        window.wx.openLocation({
+          latitude: latitude, // 纬度，浮点数，范围为90 ~ -90
+          longitude: longitude, // 经度，浮点数，范围为180 ~ -180。
+          name: '', // 位置名
+          address: '', // 地址详情说明
+          scale: 1, // 地图缩放级别,整形值,范围从1~28。默认为最大
+          infoUrl: '', // 在查看位置界面底部显示的超链接,可点击跳转
+        });
+      },
+    });
+  }
+
+  handleSubmit = () => {
+    alert(123);
   }
 
   render() {
@@ -67,7 +91,7 @@ export default class Deliver extends React.PureComponent {
           <List>
             <Item><div className={styles.center}>附近有 <a>3</a> 位跑男为您服务</div></Item>
             <Link to="/map"><Item arrow="horizontal" onClick={() => {}}>物品寄到哪里去</Item></Link>
-            <Item arrow="horizontal" onClick={() => {}}>物品从哪寄</Item>
+            <Item arrow="horizontal" onClick={this.handleShowMap}>物品从哪寄</Item>
             <Item align="top" multipleLine>
               <DatePicker
                 okText="确定"
@@ -252,7 +276,7 @@ export default class Deliver extends React.PureComponent {
             <div className={styles.left}>
               1234
             </div>
-            <div className={styles.trade}>
+            <div className={styles.trade} onClick={this.handleSubmit}>
               <a className={styles.buy} role="button">
                 发布
               </a>

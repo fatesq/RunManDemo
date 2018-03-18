@@ -1,6 +1,12 @@
 import { stringify } from 'qs';
 import request from '../utils/request';
 
+export async function getWeixinConfig() {
+  return request('/api/secret/encode');
+}
+
+
+
 export async function queryProjectNotice() {
   return request('/api/project/notice');
 }

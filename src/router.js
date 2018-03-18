@@ -9,6 +9,7 @@ import styles from './index.less';
 
 const { ConnectedRouter } = routerRedux;
 const { AuthorizedRoute } = Authorized;
+
 dynamic.setDefaultLoadingComponent(() => {
   return <Spin size="large" className={styles.globalSpin} />;
 });
@@ -20,7 +21,7 @@ function RouterConfig({ history, app }) {
   const MobileLayout = routerData['/home'].component;
   return (
     <LocaleProvider locale={zhCN}>
-      <ConnectedRouter history={history}>
+      <ConnectedRouter history={history} >
         <Switch>
           <Route
             path="/user"

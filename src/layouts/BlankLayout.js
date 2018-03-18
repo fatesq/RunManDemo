@@ -1,8 +1,16 @@
 import React from 'react';
+import { connect } from 'dva';
 import { Route, Redirect, Switch } from 'dva/router';
 import { getRoutes } from '../utils/utils';
 
+@connect(({ global, loading }) => ({
+  global,
+  submitting: loading.effects['login/login'],
+}))
 export default class BlankLayout extends React.PureComponent {
+  componentDidMount() {
+    // this.props.dispatch({ type: 'global/weixinConfig' });
+  }
   render() {
     const { routerData, match } = this.props;
     return (

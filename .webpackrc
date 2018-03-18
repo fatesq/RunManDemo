@@ -21,8 +21,9 @@
   "disableDynamicImport": true,
   "hash": true,
   "proxy": {
-    "/": {
-    "target": "http://39.107.112.14:8080/",
+    "/api": {
+    "target": "http://39.107.112.14:8081/",
+    "pathRewrite": {"^/api" : "/"},
     "changeOrigin": true
     }
   }
