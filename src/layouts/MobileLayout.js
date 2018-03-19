@@ -15,7 +15,7 @@ class MobileLayout extends React.PureComponent {
   state = {
     open: false,
   }
-  componentDidMount() {
+  componentWillMount() {
     this.props.dispatch({ type: 'global/weixinConfig' });
   }
 

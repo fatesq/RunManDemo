@@ -32,7 +32,7 @@ function generator({ defaultProps, defaultRules, type }) {
         let count = 59;
         this.setState({ count });
         if (this.props.onGetCaptcha) {
-          this.props.onGetCaptcha();
+          this.props.onGetCaptcha(this.context.form);
         }
         this.interval = setInterval(() => {
           count -= 1;

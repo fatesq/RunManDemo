@@ -4,6 +4,13 @@ export function fixedZero(val) {
   return val * 1 < 10 ? `0${val}` : val;
 }
 
+export function getQueryString(name, url) {
+  const reg = new RegExp(`(^|&)${name}=([^&]*)(&|$)`, 'i');
+  const r = decodeURIComponent(url).substr(1).match(reg);
+  if (r != null) return unescape(r[2]);
+  return null;
+}
+
 export function getTimeDistance(type) {
   const now = new Date();
   const oneDay = 1000 * 60 * 60 * 24;

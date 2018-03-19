@@ -1,5 +1,5 @@
 import { routerRedux } from 'dva/router';
-import { fakeAccountLogin } from '../services/api';
+import { wxlogin, sendMessage } from '../services/api';
 import { setAuthority } from '../utils/authority';
 import { reloadAuthorized } from '../utils/Authorized';
 
@@ -13,7 +13,7 @@ export default {
   effects: {
     *login({ payload }, { call, put }) {
       console.log(payload);
-      const response = yield call(fakeAccountLogin, payload);
+      const response = yield call(wxlogin, payload);
       yield put({
         type: 'changeLoginStatus',
         payload: response,
@@ -23,6 +23,9 @@ export default {
         reloadAuthorized();
         yield put(routerRedux.push('/'));
       }
+    },
+    *message({ payload }, { call, put }) {
+      yield call(sendMessage, payload);
     },
     *logout(_, { put, select }) {
       try {

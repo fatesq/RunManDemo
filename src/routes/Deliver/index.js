@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'dva';
 import { Icon, Form } from 'antd';
 import { WingBlank, Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio, Flex, Modal, Tag, Checkbox, DatePicker } from 'antd-mobile';
 import { Link } from 'dva/router';
@@ -9,6 +10,18 @@ const { Item } = List;
 const { Brief } = Item;
 const { AgreeItem } = Checkbox;
 const { RadioItem } = Radio;
+const GOODS = ['文件', '鲜花', '蛋糕', '水果生鲜', '食品饮料', '其他'];
+const PRICE = ['0-50元', '50-100元', '100-300元', '300-500元', '500以上'];
+const INSURED = [
+  { value: 0, label: '5.00元保价', extra: '若商品出现损坏或丢失,最高可获得1000.00元赔付' },
+  { value: 1, label: '3.00元保价', extra: '若商品出现损坏或丢失,最高可获得300.00元赔付' },
+  { value: 2, label: '1.00元保价', extra: '若商品出现损坏或丢失,最高可获得100.00元赔付' },
+  { value: 3, label: '不保价', extra: '若商品出现损坏或丢失,最高可获得30元优惠赔付券' },
+];
+@connect(({ home, loading }) => ({
+  home,
+  submitting: loading.effects['login/login'],
+}))
 @Form.create()
 export default class Deliver extends React.PureComponent {
   constructor(props) {
@@ -18,14 +31,25 @@ export default class Deliver extends React.PureComponent {
       imgHeight: 176,
       showInfo: false,
       showInsured: false,
-      tip: 1,
+      time: '', // 下单时间
+      extra: 1, // 小费
       orderType: 1, // 帮我送
       payType: 2, // 支付类型:微信
+      goodsType: 5, // 商品类型
+      goodsValue: '0-50元', // 价格区间
+      goodsWeight: 1, // 重量
+      insuredType: 3, // 保价类型
+      signFace: 1,
     };
   }
   onChangeTip = (val) => {
-    console.log(val);
-    this.setState({ tip: val });
+    this.setState({ extra: val });
+  }
+  onChangWeight = (val) => {
+    this.setState({ goodsWeight: val });
+  }
+  onChangeInsured = (val) => {
+    this.setState({ insuredType: val });
   }
 
   handleShowBasic = () => {
@@ -34,13 +58,24 @@ export default class Deliver extends React.PureComponent {
   handleShowInsured = () => {
     this.setState({ showInsured: !this.state.showInsured });
   }
-
+  handleGoodsType = (val) => {
+    this.setState({ goodsType: val });
+  }
+  handleGoodsValue = (val) => {
+    this.setState({ goodsValue: val });
+  }
+  handleTime = (val) => {
+    this.setState({ time: val });
+  }
+  handleSignFace = (val) => {
+    this.setState({ signFace: val ? 1 : 2 });
+  }
   handleShowMap = () => {
     window.wx.getLocation({
       type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
       success: (res) => {
         const { latitude, longitude, speed, accuracy } = res;
-        console.log(res);
+        console.log(res,123);
         window.wx.openLocation({
           latitude: latitude, // 纬度，浮点数，范围为90 ~ -90
           longitude: longitude, // 经度，浮点数，范围为180 ~ -180。
@@ -52,9 +87,28 @@ export default class Deliver extends React.PureComponent {
       },
     });
   }
+  handlePayType = (val) => {
+    this.setState({ payType: val });
+  }
 
   handleSubmit = () => {
-    alert(123);
+    const info = {
+      orderType: this.state.orderType,
+      time: this.state.time,
+      extra: this.state.extra,
+      payType: this.state.payType,
+      goodsType: this.state.goodsType,
+      goodsValue: this.state.goodsValue,
+      goodsWeight: this.state.goodsWeight,
+      insuredType: this.state.insuredType,
+      signFace: this.state.insuredType,
+    };
+    this.props.dispatch({
+      type: 'home/submit',
+      payload: {
+        ...info,
+      },
+    });
   }
 
   render() {
@@ -90,14 +144,17 @@ export default class Deliver extends React.PureComponent {
         <WingBlank>
           <List>
             <Item><div className={styles.center}>附近有 <a>3</a> 位跑男为您服务</div></Item>
-            <Link to="/map"><Item arrow="horizontal" onClick={() => {}}>物品寄到哪里去</Item></Link>
+            <Link to="/address">
+              <Item arrow="horizontal" onClick={() => {}}>物品寄到哪里去</Item>
+            </Link>
             <Item arrow="horizontal" onClick={this.handleShowMap}>物品从哪寄</Item>
             <Item align="top" multipleLine>
               <DatePicker
+                value={this.state.time}
                 okText="确定"
                 dismissText="取消"
-                value={this.state.date}
-                onChange={date => console.log(date)}
+                format="YYYY-MM-DD HH:mm"
+                onOk={this.handleTime}
               >
                 <div className={styles.center}><Icon type="clock-circle-o" /> 立刻发单</div>
               </DatePicker>
@@ -109,9 +166,9 @@ export default class Deliver extends React.PureComponent {
               选择物品信息
               <Brief>
                 <Flex style={{ textAlign: 'center' }}>
-                  <Flex.Item className={styles.column} ><Icon type="appstore" /><span>其他</span></Flex.Item>
-                  <Flex.Item className={styles.column} ><Icon type="pay-circle" /><span>0-50</span></Flex.Item>
-                  <Flex.Item className={styles.column} ><Icon type="tag" /><span>1公斤</span></Flex.Item>
+                  <Flex.Item className={styles.column} ><Icon type="appstore" /><span>{GOODS[this.state.goodsType]}</span></Flex.Item>
+                  <Flex.Item className={styles.column} ><Icon type="pay-circle" /><span>{this.state.goodsValue}</span></Flex.Item>
+                  <Flex.Item className={styles.column} ><Icon type="tag" /><span>{this.state.goodsWeight}公斤</span></Flex.Item>
                 </Flex>
               </Brief>
             </Item>
@@ -126,7 +183,7 @@ export default class Deliver extends React.PureComponent {
                   <Flex justify="between">
                     <Flex.Item onClick={this.handleShowBasic}>取消</Flex.Item>
                     <Flex.Item style={{ textAlign: 'center' }}>选择物品信息</Flex.Item >
-                    <Flex.Item style={{ textAlign: 'right' }}>确认</Flex.Item >
+                    <Flex.Item style={{ textAlign: 'right' }} onClick={this.handleShowBasic} >确认</Flex.Item >
                   </Flex>
                 }
               >
@@ -134,8 +191,16 @@ export default class Deliver extends React.PureComponent {
                   物品类型
                   <Brief>
                     <Flex wrap="wrap">
-                      {['文件', '鲜花', '蛋糕', '水果生鲜', '食品饮料', '其他'].map((i) => {
-                        return <Tag className={styles.goodsTag} key={i} >{i}</Tag>;
+                      {GOODS.map((i, index) => {
+                        return (
+                          <Tag
+                            className={styles.goodsTag}
+                            selected={this.state.goodsType === index}
+                            key={i}
+                            onChange={() => this.handleGoodsType(index)}
+                          >{i}
+                          </Tag>
+                        );
                       })}
                     </Flex>
                   </Brief>
@@ -144,8 +209,16 @@ export default class Deliver extends React.PureComponent {
                   物品价值
                   <Brief>
                     <Flex wrap="wrap">
-                      {['0-50元', '50-100元', '100-300元', '300-500元', '500以上'].map((i) => {
-                        return <Tag className={styles.goodsTag} key={i} >{i}</Tag>;
+                      {PRICE.map((i) => {
+                        return (
+                          <Tag
+                            className={styles.goodsTag}
+                            selected={this.state.goodsValue === i}
+                            key={i}
+                            onChange={() => this.handleGoodsValue(i)}
+                          >{i}
+                          </Tag>
+                        );
                       })}
                     </Flex>
                   </Brief>
@@ -158,15 +231,15 @@ export default class Deliver extends React.PureComponent {
                       showNumber
                       min={1}
                       max={15}
-                      value={this.state.tip}
-                      onChange={this.onChangeTip}
+                      value={this.state.goodsWeight}
+                      onChange={this.onChangWeight}
                     />
                     <div>5公斤以内不加价（最大15公斤）</div>
                   </Brief>
                 </Item>
               </List>
             </Modal>
-            <Item arrow="horizontal" extra="贵重物品选择保价" onClick={this.handleShowInsured}>保价</Item>
+            <Item arrow="horizontal" extra={INSURED[this.state.insuredType].label} onClick={this.handleShowInsured}>保价</Item>
             <Modal
               popup
               visible={this.state.showInsured}
@@ -178,28 +251,19 @@ export default class Deliver extends React.PureComponent {
                   <Flex justify="between">
                     <Flex.Item onClick={this.handleShowInsured}>取消</Flex.Item>
                     <Flex.Item style={{ textAlign: 'center' }}>选择物品信息</Flex.Item >
-                    <Flex.Item style={{ textAlign: 'right' }}>确认</Flex.Item >
+                    <Flex.Item style={{ textAlign: 'right' }} onClick={this.handleShowInsured}>确认</Flex.Item >
                   </Flex>
                 }
               >
-                <Item>
-                  5.00元保价
-                  <Brief>
-                  若商品出现损坏或丢失,最高可获得1000.00元赔付
-                  </Brief>
-                </Item>
-                <Item>
-                  5.00元保价
-                  <Brief>
-                  若商品出现损坏或丢失,最高可获得1000.00元赔付
-                  </Brief>
-                </Item>
-                <Item>
-                  5.00元保价
-                  <Brief>
-                  若商品出现损坏或丢失,最高可获得1000.00元赔付
-                  </Brief>
-                </Item>
+                {INSURED.map(i => (
+                  <RadioItem
+                    key={i.value}
+                    checked={this.state.insuredType === i.value}
+                    onChange={() => this.onChangeInsured(i.value)}
+                  >
+                    {i.label}<List.Item.Brief>{i.extra}</List.Item.Brief>
+                  </RadioItem>
+                ))}
                 <Item >
                   <AgreeItem style={{ textAlign: 'center' }} data-seed="logId" onChange={e => console.log('checkbox', e)}>
                     我已阅读并同意<a onClick={(e) => { e.preventDefault(); alert('agree it'); }}>《物品保价协议》</a>
@@ -212,10 +276,10 @@ export default class Deliver extends React.PureComponent {
               extra={
                 <Switch
                   {...getFieldProps('Switch1', {
-                    initialValue: true,
+                    initialValue: this.state.signFace === 1,
                     valuePropName: 'checked',
                   })}
-                  onClick={(checked) => { console.log(checked); }}
+                  onClick={this.handleSignFace}
                 />
               }
             >
@@ -225,11 +289,12 @@ export default class Deliver extends React.PureComponent {
               {...getFieldProps('account', {
                 // initialValue: 'little ant',
                 rules: [
-                  { required: true, message: 'Please input account' },
+                  { required: true, message: '请输入备注信息' },
                   { validator: this.validateAccount },
                 ],
               })}
               clear
+              onChange={(val) => { this.setState({ tip: val }); }}
               error={!!getFieldError('account')}
               onErrorClick={() => {
                 alert(getFieldError('account').join('、'));
@@ -246,7 +311,7 @@ export default class Deliver extends React.PureComponent {
                   style={{ width: '100%', minWidth: '100px' }}
                   showNumber
                   min={0}
-                  value={this.state.tip}
+                  value={this.state.extra}
                   onChange={this.onChangeTip}
                 />
               }
@@ -262,8 +327,8 @@ export default class Deliver extends React.PureComponent {
               支付方式
               <RadioItem
                 style={{ paddingLeft: 0 }}
-                checked
-                onChange={() => { }}
+                checked={this.state.payType === 2}
+                onChange={() => { this.handlePayType(2); }}
               >
                 <Icon type="wechat" style={{ color: '#1aad19' }} />&nbsp;微信支付
               </RadioItem>

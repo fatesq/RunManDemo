@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { connect } from 'dva';
 import { routerRedux } from 'dva/router';
-import { Checkbox, Alert, Icon } from 'antd';
+import { Alert } from 'antd';
 import Login from '../../components/Login';
 import styles from './Login.less';
 
-const { Tab, UserName, Password, Mobile, Captcha, Submit } = Login;
+const { Mobile, Captcha, Submit } = Login;
 
 @connect(({ login, loading }) => ({
   login,
@@ -21,8 +21,7 @@ export default class LoginPage extends Component {
     this.props.dispatch({
       type: 'login/login',
       payload: {
-        code: window.localStorage.code,
-        // type,
+        wxAccount: window.localStorage.code,
       },
     });
   }
@@ -31,7 +30,14 @@ export default class LoginPage extends Component {
     this.setState({ type });
   }
 
-  onGetCaptcha = () => {
+  onGetCaptcha = (form) => {
+    console.log(form.validateFields(['mobile']));
+    this.props.dispatch({
+      type: 'login/message',
+      payload: {
+        phone: 123, // window.localStorage.code,
+      },
+    });
     alert('短信发送');
   }
 
