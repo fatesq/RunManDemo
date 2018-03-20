@@ -7,8 +7,9 @@ import { getRoutes } from '../utils/utils';
 import styles from './MobileLayout.less';
 
 
-@connect(({ global, loading }) => ({
+@connect(({ global, login, loading }) => ({
   global,
+  openid: login.openid,
   submitting: loading.effects['login/login'],
 }))
 class MobileLayout extends React.PureComponent {
@@ -16,6 +17,9 @@ class MobileLayout extends React.PureComponent {
     open: false,
   }
   componentWillMount() {
+    // if (!this.props.openid) {
+    //   window.location.hash = '/user/login';
+    // }
     this.props.dispatch({ type: 'global/weixinConfig' });
   }
 

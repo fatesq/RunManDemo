@@ -1,5 +1,6 @@
 import { routerRedux } from 'dva/router';
-import { wxlogin, sendMessage } from '../services/api';
+import { Toast } from 'antd-mobile';
+import { wxlogin, sendMessage, bindMessage } from '../services/api';
 import { setAuthority } from '../utils/authority';
 import { reloadAuthorized } from '../utils/Authorized';
 
@@ -7,55 +8,53 @@ export default {
   namespace: 'login',
 
   state: {
-    status: undefined,
+    openid: undefined,
+    id: undefined,
   },
 
   effects: {
     *login({ payload }, { call, put }) {
-      console.log(payload);
       const response = yield call(wxlogin, payload);
-      yield put({
-        type: 'changeLoginStatus',
-        payload: response,
-      });
+      if (response.obj && response.obj.wxAccount) {
+        yield put({
+          type: 'changeOpenId',
+          payload: response.obj,
+        });
+      }
       // Login successfully
-      if (response.status === 'ok') {
+      if (response.status === '00' && response.obj.phone) {
         reloadAuthorized();
-        yield put(routerRedux.push('/'));
+        window.location.hash = '/home/deliver';
+      }
+      if (response.status !== '00') {
+        Toast.fail('获取信息失败', 2);
+        window.wx.closeWindow();
+      }
+      if (response.status === '00' && !response.obj.phone) {
+        Toast.info('请先绑定手机号', 1);
       }
     },
-    *message({ payload }, { call, put }) {
+    *message({ payload }, { call }) {
       yield call(sendMessage, payload);
     },
-    *logout(_, { put, select }) {
-      try {
-        // get location pathname
-        const urlParams = new URL(window.location.href);
-        const pathname = yield select(state => state.routing.location.pathname);
-        // add the parameters in the url
-        urlParams.searchParams.set('redirect', pathname);
-        window.history.replaceState(null, 'login', urlParams.href);
-      } finally {
-        yield put({
-          type: 'changeLoginStatus',
-          payload: {
-            status: false,
-            currentAuthority: 'guest',
-          },
-        });
+    *bind({ payload }, { call }) {
+      const response = yield call(bindMessage, payload);
+      if (response.status === '00') {
         reloadAuthorized();
-        yield put(routerRedux.push('/user/login'));
+        window.location.hash = '/home/deliver';
+      } else {
+        Toast.fail('绑定失败', 1);
       }
     },
   },
 
   reducers: {
-    changeLoginStatus(state, { payload }) {
+    changeOpenId(state, { payload }) {
       setAuthority(payload.currentAuthority);
       return {
         ...state,
-        status: payload.status,
-        type: payload.type,
+        openid: payload.wxAccount,
+        id: payload.id,
       };
     },
   },

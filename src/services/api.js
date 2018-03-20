@@ -21,6 +21,13 @@ export async function sendMessage(params) {
   });
 }
 
+export async function bindMessage(params) {
+  return request('/api/frontUser/bind', {
+    method: 'POST',
+    data: params,
+  });
+}
+
 export async function postOrder(params) {
   return request('/api/order/add', {
     method: 'POST',

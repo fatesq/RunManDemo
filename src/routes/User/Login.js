@@ -31,14 +31,16 @@ export default class LoginPage extends Component {
   }
 
   onGetCaptcha = (form) => {
-    console.log(form.validateFields(['mobile']));
-    this.props.dispatch({
-      type: 'login/message',
-      payload: {
-        phone: 123, // window.localStorage.code,
-      },
+    form.validateFields(['mobile'], (err, values) => {
+      if (!err) {
+        this.props.dispatch({
+          type: 'login/message',
+          payload: {
+            phone: values.mobile,
+          },
+        });
+      }
     });
-    alert('短信发送');
   }
 
   handlePageType = () => {
@@ -46,14 +48,17 @@ export default class LoginPage extends Component {
   }
 
   handleSubmit = (err, values) => {
-    const { type } = this.state;
-    console.log(values);
+    console.log(this.props.login.openid);
+    const info = {
+      checkCode: values.captcha,
+      phone: values.mobile,
+      wxAccount: this.props.login.openid,
+    };
     if (!err) {
       this.props.dispatch({
-        type: 'login/login',
+        type: 'login/bind',
         payload: {
-          ...values,
-          // type,
+          ...info,
         },
       });
     }

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Icon, Form } from 'antd';
-import { WingBlank, Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio, Flex, Modal, Tag, Checkbox, DatePicker } from 'antd-mobile';
+import { Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio, Flex, Modal, Tag, Checkbox, DatePicker } from 'antd-mobile';
 import { Link } from 'dva/router';
 import styles from './index.less';
 
@@ -75,15 +75,6 @@ export default class Deliver extends React.PureComponent {
       type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
       success: (res) => {
         const { latitude, longitude, speed, accuracy } = res;
-        console.log(res,123);
-        window.wx.openLocation({
-          latitude: latitude, // 纬度，浮点数，范围为90 ~ -90
-          longitude: longitude, // 经度，浮点数，范围为180 ~ -180。
-          name: '', // 位置名
-          address: '', // 地址详情说明
-          scale: 1, // 地图缩放级别,整形值,范围从1~28。默认为最大
-          infoUrl: '', // 在查看位置界面底部显示的超链接,可点击跳转
-        });
       },
     });
   }
@@ -141,201 +132,199 @@ export default class Deliver extends React.PureComponent {
             </a>
           ))}
         </Carousel>
-        <WingBlank>
-          <List>
-            <Item><div className={styles.center}>附近有 <a>3</a> 位跑男为您服务</div></Item>
-            <Link to="/address">
-              <Item arrow="horizontal" onClick={() => {}}>物品寄到哪里去</Item>
-            </Link>
-            <Item arrow="horizontal" onClick={this.handleShowMap}>物品从哪寄</Item>
-            <Item align="top" multipleLine>
-              <DatePicker
-                value={this.state.time}
-                okText="确定"
-                dismissText="取消"
-                format="YYYY-MM-DD HH:mm"
-                onOk={this.handleTime}
-              >
-                <div className={styles.center}><Icon type="clock-circle-o" /> 立刻发单</div>
-              </DatePicker>
-            </Item>
-          </List>
-          <WhiteSpace size="xs" />
-          <List>
-            <Item onClick={this.handleShowBasic}>
-              选择物品信息
-              <Brief>
-                <Flex style={{ textAlign: 'center' }}>
-                  <Flex.Item className={styles.column} ><Icon type="appstore" /><span>{GOODS[this.state.goodsType]}</span></Flex.Item>
-                  <Flex.Item className={styles.column} ><Icon type="pay-circle" /><span>{this.state.goodsValue}</span></Flex.Item>
-                  <Flex.Item className={styles.column} ><Icon type="tag" /><span>{this.state.goodsWeight}公斤</span></Flex.Item>
+        <List>
+          <Item><div className={styles.center}>附近有 <a>3</a> 位跑男为您服务</div></Item>
+          <Link to="/address">
+            <Item arrow="horizontal" onClick={() => {}}>物品寄到哪里去</Item>
+          </Link>
+          <Item arrow="horizontal" onClick={this.handleShowMap}>物品从哪寄</Item>
+          <Item align="top" multipleLine>
+            <DatePicker
+              value={this.state.time}
+              okText="确定"
+              dismissText="取消"
+              format="YYYY-MM-DD HH:mm"
+              onOk={this.handleTime}
+            >
+              <div className={styles.center}><Icon type="clock-circle-o" /> 立刻发单</div>
+            </DatePicker>
+          </Item>
+        </List>
+        <WhiteSpace size="xs" />
+        <List>
+          <Item onClick={this.handleShowBasic}>
+            选择物品信息
+            <Brief>
+              <Flex style={{ textAlign: 'center' }}>
+                <Flex.Item className={styles.column} ><Icon type="appstore" /><span>{GOODS[this.state.goodsType]}</span></Flex.Item>
+                <Flex.Item className={styles.column} ><Icon type="pay-circle" /><span>{this.state.goodsValue}</span></Flex.Item>
+                <Flex.Item className={styles.column} ><Icon type="tag" /><span>{this.state.goodsWeight}公斤</span></Flex.Item>
+              </Flex>
+            </Brief>
+          </Item>
+          <Modal
+            popup
+            visible={this.state.showInfo}
+            onClose={this.handleShowBasic}
+            animationType="slide-up"
+          >
+            <List
+              renderHeader={
+                <Flex justify="between">
+                  <Flex.Item onClick={this.handleShowBasic}>取消</Flex.Item>
+                  <Flex.Item style={{ textAlign: 'center' }}>选择物品信息</Flex.Item >
+                  <Flex.Item style={{ textAlign: 'right' }} onClick={this.handleShowBasic} >确认</Flex.Item >
                 </Flex>
-              </Brief>
-            </Item>
-            <Modal
-              popup
-              visible={this.state.showInfo}
-              onClose={this.handleShowBasic}
-              animationType="slide-up"
-            >
-              <List
-                renderHeader={
-                  <Flex justify="between">
-                    <Flex.Item onClick={this.handleShowBasic}>取消</Flex.Item>
-                    <Flex.Item style={{ textAlign: 'center' }}>选择物品信息</Flex.Item >
-                    <Flex.Item style={{ textAlign: 'right' }} onClick={this.handleShowBasic} >确认</Flex.Item >
-                  </Flex>
-                }
-              >
-                <Item multipleLine>
-                  物品类型
-                  <Brief>
-                    <Flex wrap="wrap">
-                      {GOODS.map((i, index) => {
-                        return (
-                          <Tag
-                            className={styles.goodsTag}
-                            selected={this.state.goodsType === index}
-                            key={i}
-                            onChange={() => this.handleGoodsType(index)}
-                          >{i}
-                          </Tag>
-                        );
-                      })}
-                    </Flex>
-                  </Brief>
-                </Item>
-                <Item multipleLine>
-                  物品价值
-                  <Brief>
-                    <Flex wrap="wrap">
-                      {PRICE.map((i) => {
-                        return (
-                          <Tag
-                            className={styles.goodsTag}
-                            selected={this.state.goodsValue === i}
-                            key={i}
-                            onChange={() => this.handleGoodsValue(i)}
-                          >{i}
-                          </Tag>
-                        );
-                      })}
-                    </Flex>
-                  </Brief>
-                </Item>
-                <Item multipleLine>
-                  物品重量
-                  <Brief style={{ textAlign: 'center' }}>
-                    <Stepper
-                      style={{ width: '100%', maxWidth: '50%' }}
-                      showNumber
-                      min={1}
-                      max={15}
-                      value={this.state.goodsWeight}
-                      onChange={this.onChangWeight}
-                    />
-                    <div>5公斤以内不加价（最大15公斤）</div>
-                  </Brief>
-                </Item>
-              </List>
-            </Modal>
-            <Item arrow="horizontal" extra={INSURED[this.state.insuredType].label} onClick={this.handleShowInsured}>保价</Item>
-            <Modal
-              popup
-              visible={this.state.showInsured}
-              onClose={this.handleShowInsured}
-              animationType="slide-up"
-            >
-              <List
-                renderHeader={
-                  <Flex justify="between">
-                    <Flex.Item onClick={this.handleShowInsured}>取消</Flex.Item>
-                    <Flex.Item style={{ textAlign: 'center' }}>选择物品信息</Flex.Item >
-                    <Flex.Item style={{ textAlign: 'right' }} onClick={this.handleShowInsured}>确认</Flex.Item >
-                  </Flex>
-                }
-              >
-                {INSURED.map(i => (
-                  <RadioItem
-                    key={i.value}
-                    checked={this.state.insuredType === i.value}
-                    onChange={() => this.onChangeInsured(i.value)}
-                  >
-                    {i.label}<List.Item.Brief>{i.extra}</List.Item.Brief>
-                  </RadioItem>
-                ))}
-                <Item >
-                  <AgreeItem style={{ textAlign: 'center' }} data-seed="logId" onChange={e => console.log('checkbox', e)}>
-                    我已阅读并同意<a onClick={(e) => { e.preventDefault(); alert('agree it'); }}>《物品保价协议》</a>
-                  </AgreeItem>
-                  <Brief style={{ textAlign: 'center' }}>赔付金额以物品实际价格凭证为准,<br /> 不超过所选保价方案赔付金额</Brief>
-                </Item>
-              </List>
-            </Modal>
-            <Item
-              extra={
-                <Switch
-                  {...getFieldProps('Switch1', {
-                    initialValue: this.state.signFace === 1,
-                    valuePropName: 'checked',
-                  })}
-                  onClick={this.handleSignFace}
-                />
               }
             >
-                当面签收
-            </Item>
-            <InputItem
-              {...getFieldProps('account', {
-                // initialValue: 'little ant',
-                rules: [
-                  { required: true, message: '请输入备注信息' },
-                  { validator: this.validateAccount },
-                ],
-              })}
-              clear
-              onChange={(val) => { this.setState({ tip: val }); }}
-              error={!!getFieldError('account')}
-              onErrorClick={() => {
-                alert(getFieldError('account').join('、'));
-              }}
-              placeholder="请输入您的备注信息"
-            >备注信息
-            </InputItem>
-          </List>
-          <WhiteSpace size="xs" />
-          <List>
-            <Item
-              extra={
-                <Stepper
-                  style={{ width: '100%', minWidth: '100px' }}
-                  showNumber
-                  min={0}
-                  value={this.state.extra}
-                  onChange={this.onChangeTip}
-                />
+              <Item multipleLine>
+                物品类型
+                <Brief>
+                  <Flex wrap="wrap">
+                    {GOODS.map((i, index) => {
+                      return (
+                        <Tag
+                          className={styles.goodsTag}
+                          selected={this.state.goodsType === index}
+                          key={i}
+                          onChange={() => this.handleGoodsType(index)}
+                        >{i}
+                        </Tag>
+                      );
+                    })}
+                  </Flex>
+                </Brief>
+              </Item>
+              <Item multipleLine>
+                物品价值
+                <Brief>
+                  <Flex wrap="wrap">
+                    {PRICE.map((i) => {
+                      return (
+                        <Tag
+                          className={styles.goodsTag}
+                          selected={this.state.goodsValue === i}
+                          key={i}
+                          onChange={() => this.handleGoodsValue(i)}
+                        >{i}
+                        </Tag>
+                      );
+                    })}
+                  </Flex>
+                </Brief>
+              </Item>
+              <Item multipleLine>
+                物品重量
+                <Brief style={{ textAlign: 'center' }}>
+                  <Stepper
+                    style={{ width: '100%', maxWidth: '50%' }}
+                    showNumber
+                    min={1}
+                    max={15}
+                    value={this.state.goodsWeight}
+                    onChange={this.onChangWeight}
+                  />
+                  <div>5公斤以内不加价（最大15公斤）</div>
+                </Brief>
+              </Item>
+            </List>
+          </Modal>
+          <Item arrow="horizontal" extra={INSURED[this.state.insuredType].label} onClick={this.handleShowInsured}>保价</Item>
+          <Modal
+            popup
+            visible={this.state.showInsured}
+            onClose={this.handleShowInsured}
+            animationType="slide-up"
+          >
+            <List
+              renderHeader={
+                <Flex justify="between">
+                  <Flex.Item onClick={this.handleShowInsured}>取消</Flex.Item>
+                  <Flex.Item style={{ textAlign: 'center' }}>选择物品信息</Flex.Item >
+                  <Flex.Item style={{ textAlign: 'right' }} onClick={this.handleShowInsured}>确认</Flex.Item >
+                </Flex>
               }
             >
-              小费
-            </Item>
-            <Item extra={`￥ ${1}`}>夜班津贴</Item>
-            <Item extra={`￥ ${1}`}>跑腿费</Item>
-          </List>
-          <WhiteSpace size="xs" />
-          <List>
-            <Item>
-              支付方式
-              <RadioItem
-                style={{ paddingLeft: 0 }}
-                checked={this.state.payType === 2}
-                onChange={() => { this.handlePayType(2); }}
-              >
-                <Icon type="wechat" style={{ color: '#1aad19' }} />&nbsp;微信支付
-              </RadioItem>
-            </Item>
-          </List>
-          <WhiteSpace />
-        </WingBlank>
+              {INSURED.map(i => (
+                <RadioItem
+                  key={i.value}
+                  checked={this.state.insuredType === i.value}
+                  onChange={() => this.onChangeInsured(i.value)}
+                >
+                  {i.label}<List.Item.Brief>{i.extra}</List.Item.Brief>
+                </RadioItem>
+              ))}
+              <Item >
+                <AgreeItem style={{ textAlign: 'center' }} data-seed="logId" onChange={e => console.log('checkbox', e)}>
+                  我已阅读并同意<a onClick={(e) => { e.preventDefault(); alert('agree it'); }}>《物品保价协议》</a>
+                </AgreeItem>
+                <Brief style={{ textAlign: 'center' }}>赔付金额以物品实际价格凭证为准,<br /> 不超过所选保价方案赔付金额</Brief>
+              </Item>
+            </List>
+          </Modal>
+          <Item
+            extra={
+              <Switch
+                {...getFieldProps('Switch1', {
+                  initialValue: this.state.signFace === 1,
+                  valuePropName: 'checked',
+                })}
+                onClick={this.handleSignFace}
+              />
+            }
+          >
+              当面签收
+          </Item>
+          <InputItem
+            {...getFieldProps('account', {
+              // initialValue: 'little ant',
+              rules: [
+                { required: true, message: '请输入备注信息' },
+                { validator: this.validateAccount },
+              ],
+            })}
+            clear
+            onChange={(val) => { this.setState({ tip: val }); }}
+            error={!!getFieldError('account')}
+            onErrorClick={() => {
+              alert(getFieldError('account').join('、'));
+            }}
+            placeholder="请输入您的备注信息"
+          >备注信息
+          </InputItem>
+        </List>
+        <WhiteSpace size="xs" />
+        <List>
+          <Item
+            extra={
+              <Stepper
+                style={{ width: '100%', minWidth: '100px' }}
+                showNumber
+                min={0}
+                value={this.state.extra}
+                onChange={this.onChangeTip}
+              />
+            }
+          >
+            小费
+          </Item>
+          <Item extra={`￥ ${1}`}>夜班津贴</Item>
+          <Item extra={`￥ ${1}`}>跑腿费</Item>
+        </List>
+        <WhiteSpace size="xs" />
+        <List>
+          <Item>
+            支付方式
+            <RadioItem
+              style={{ paddingLeft: 0 }}
+              checked={this.state.payType === 2}
+              onChange={() => { this.handlePayType(2); }}
+            >
+              <Icon type="wechat" style={{ color: '#1aad19' }} />&nbsp;微信支付
+            </RadioItem>
+          </Item>
+        </List>
+        <WhiteSpace />
         <div className={styles.actionBarContainer}>
           <div className={styles.actionBarWrap}>
             <div className={styles.left}>
