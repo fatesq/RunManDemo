@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'dva';
 import { Icon, Form } from 'antd';
 import { Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio, Flex, Modal, Tag, Checkbox, DatePicker } from 'antd-mobile';
+import moment from 'moment';
 import { Link } from 'dva/router';
 import styles from './index.less';
 
@@ -18,8 +19,11 @@ const INSURED = [
   { value: 2, label: '1.00元保价', extra: '若商品出现损坏或丢失,最高可获得100.00元赔付' },
   { value: 3, label: '不保价', extra: '若商品出现损坏或丢失,最高可获得30元优惠赔付券' },
 ];
-@connect(({ home, loading }) => ({
+const nowTimeStamp = Date.now();
+const now = moment(nowTimeStamp);
+@connect(({ home, login, loading }) => ({
   home,
+  userId: login.id,
   submitting: loading.effects['login/login'],
 }))
 @Form.create()
@@ -31,7 +35,7 @@ export default class Deliver extends React.PureComponent {
       imgHeight: 176,
       showInfo: false,
       showInsured: false,
-      time: '', // 下单时间
+      time: now, // 下单时间
       extra: 1, // 小费
       orderType: 1, // 帮我送
       payType: 2, // 支付类型:微信
@@ -85,7 +89,7 @@ export default class Deliver extends React.PureComponent {
   handleSubmit = () => {
     const info = {
       orderType: this.state.orderType,
-      time: this.state.time,
+      departureTime: this.state.time,
       extra: this.state.extra,
       payType: this.state.payType,
       goodsType: this.state.goodsType,
@@ -93,11 +97,25 @@ export default class Deliver extends React.PureComponent {
       goodsWeight: this.state.goodsWeight,
       insuredType: this.state.insuredType,
       signFace: this.state.insuredType,
+      nightShift: '1',
+      payPrice: '1',
+      positionDestination: '123,321',
+      positionOriginating: '123,321',
+      useId: this.props.userId,
+      sendAddress: '发货地址详情',
+      sendFloor: '发货人楼层门牌',
+      sendName: '发货人姓名',
+      sendPhone: '发货人电话',
+      city: '南京',
+      receiverPhone: '收货人电话',
+      receiverName: '收货人姓名',
+      receiverFloor: '收货人楼层门牌',
+      receiverAddress: '收货地址详情',
     };
     this.props.dispatch({
       type: 'home/submit',
       payload: {
-        ...info,
+        order: { ...info },
       },
     });
   }
@@ -140,10 +158,11 @@ export default class Deliver extends React.PureComponent {
           <Item arrow="horizontal" onClick={this.handleShowMap}>物品从哪寄</Item>
           <Item align="top" multipleLine>
             <DatePicker
-              value={this.state.time}
+              // value={this.state.time}
               okText="确定"
               dismissText="取消"
               format="YYYY-MM-DD HH:mm"
+              // mode="datatime"
               onOk={this.handleTime}
             >
               <div className={styles.center}><Icon type="clock-circle-o" /> 立刻发单</div>

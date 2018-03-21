@@ -1,3 +1,4 @@
+import { routerRedux } from 'dva/router';
 import { postOrder } from '../services/api';
 
 export default {
@@ -17,9 +18,10 @@ export default {
     *submit({ payload }, { call, put }) {
       const response = yield call(postOrder, payload);
       yield put({
-        type: 'save',
+        type: 'order/info',
         payload: response,
       });
+      yield put(routerRedux.push('/orderInfo'));
     },
     *fetchCurrent(_, { call, put }) {
       const response = yield call(queryCurrent);

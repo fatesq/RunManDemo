@@ -50,7 +50,7 @@ export default {
 
   reducers: {
     changeOpenId(state, { payload }) {
-      setAuthority(payload.currentAuthority);
+      setAuthority('user');
       return {
         ...state,
         openid: payload.wxAccount,
