@@ -19,11 +19,9 @@ class MobileLayout extends React.PureComponent {
   componentWillMount() {
     if (!this.props.openid) {
       window.location.hash = '/user/login';
+    } else {
+      this.props.dispatch({ type: 'global/weixinConfig' });
     }
-  }
-
-  componentDidMount() {
-    this.props.dispatch({ type: 'global/weixinConfig' });
   }
 
   onOpenChange = () => {

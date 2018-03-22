@@ -124,6 +124,9 @@ export const getRouterData = (app) => {
     '/address': {
       component: dynamicWrapper(app, [], () => import('../routes/Map/Address')),
     },
+    '/map': {
+      component: dynamicWrapper(app, [], () => import('../routes/Map')),
+    },
     '/coupon': {
       component: dynamicWrapper(app, [], () => import('../routes/Center/Coupon.js')),
     },
