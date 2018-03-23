@@ -8,8 +8,8 @@ import { getRoutes } from '../utils/utils';
   submitting: loading.effects['login/login'],
 }))
 export default class BlankLayout extends React.PureComponent {
-  componentDidMount() {
-    // this.props.dispatch({ type: 'global/weixinConfig' });
+  componentWillMount() {
+    this.props.dispatch({ type: 'global/weixinConfig' });
   }
   render() {
     const { routerData, match } = this.props;
