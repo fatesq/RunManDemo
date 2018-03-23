@@ -1,6 +1,6 @@
 import { routerRedux } from 'dva/router';
 import { Toast } from 'antd-mobile';
-import { wxlogin, sendMessage, bindMessage } from '../services/api';
+import { wxlogin, plogin, sendMessage, bindMessage } from '../services/api';
 import { setAuthority } from '../utils/authority';
 import { reloadAuthorized } from '../utils/Authorized';
 
@@ -13,6 +13,27 @@ export default {
   },
 
   effects: {
+    *plogin({ payload }, { call, put }) {
+      const response = yield call(plogin, payload);
+      if (response.obj && response.obj.wxAccount) {
+        yield put({
+          type: 'changeOpenId',
+          payload: response.obj,
+        });
+      }
+      // Login successfully
+      if (response.status === '00' && response.obj.phone) {
+        reloadAuthorized();
+        window.location.hash = '/home/deliver';
+      }
+      if (response.status !== '00') {
+        Toast.fail('获取信息失败', 2);
+        window.wx.closeWindow();
+      }
+      if (response.status === '00' && !response.obj.phone) {
+        Toast.info('请先绑定手机号', 1);
+      }
+    },
     *login({ payload }, { call, put }) {
       const response = yield call(wxlogin, payload);
       if (response.obj && response.obj.wxAccount) {

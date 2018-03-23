@@ -5,6 +5,7 @@ import zhCN from 'antd/lib/locale-provider/zh_CN';
 import dynamic from 'dva/dynamic';
 import { getRouterData } from './common/router';
 import Authorized from './utils/Authorized';
+import { isWeiXin } from './utils/utils';
 import styles from './index.less';
 
 const { ConnectedRouter } = routerRedux;
@@ -19,6 +20,7 @@ function RouterConfig({ history, app }) {
   const UserLayout = routerData['/user'].component;
   const BasicLayout = routerData['/'].component;
   const MobileLayout = routerData['/home'].component;
+  const type = isWeiXin() ? '/user/login' : '/user/plogin';
   return (
     <LocaleProvider locale={zhCN}>
       <ConnectedRouter history={history} >
@@ -35,7 +37,7 @@ function RouterConfig({ history, app }) {
             path="/"
             render={props => <BasicLayout {...props} />}
             authority={['admin', 'user']}
-            redirectPath="/user/login"
+            redirectPath={type}
           />
         </Switch>
       </ConnectedRouter>

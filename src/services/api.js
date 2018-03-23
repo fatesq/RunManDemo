@@ -7,6 +7,13 @@ export async function getWeixinConfig() {
   });
 }
 
+export async function plogin(params) {
+  return request('/api/frontUser/AppLogin', {
+    method: 'POST',
+    data: params,
+  });
+}
+
 export async function wxlogin(params) {
   return request('/api/frontUser/wxLogin', {
     method: 'POST',
