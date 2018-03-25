@@ -1,5 +1,15 @@
 import moment from 'moment';
 
+export function isWeiXin() {
+  const ua = window.navigator.userAgent.toLowerCase();
+  // mozilla/5.0 (iphone; cpu iphone os 9_1 like mac os x) applewebkit/601.1.46
+  if (ua.match(/MicroMessenger/i) == 'micromessenger') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 export function fixedZero(val) {
   return val * 1 < 10 ? `0${val}` : val;
 }

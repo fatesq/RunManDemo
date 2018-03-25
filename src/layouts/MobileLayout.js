@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Icon } from 'antd';
 import { SegmentedControl, NavBar, Drawer, List } from 'antd-mobile';
 import { Route, Redirect, Switch, NavLink } from 'dva/router';
-import { getRoutes } from '../utils/utils';
+import { getRoutes, isWeiXin } from '../utils/utils';
 import styles from './MobileLayout.less';
 
 
@@ -18,12 +18,10 @@ class MobileLayout extends React.PureComponent {
   }
   componentWillMount() {
     if (!this.props.openid) {
-      window.location.hash = '/user/login';
+      window.location.hash = isWeiXin() ? '/user/login' : '/user/plogin';
+    } else {
+      this.props.dispatch({ type: 'global/weixinConfig' });
     }
-  }
-
-  componentDidMount() {
-    this.props.dispatch({ type: 'global/weixinConfig' });
   }
 
   onOpenChange = () => {

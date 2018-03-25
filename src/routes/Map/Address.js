@@ -19,9 +19,9 @@ export default class Address extends React.PureComponent {
   openMap = () => {
     // const length = window.location.href.indexOf('?') < 0 ? 0 : window.location.href.indexOf('?');
     // const url = encodeURIComponent(length ? window.location.href.slice(0, length) : window.location.href);
-    const url = `${window.location.hostname}/index?#/address`;
-    window.location.href =
-    `http://apis.map.qq.com/tools/locpicker?search=1&type=0&backurl=${url}&key=Y5VBZ-AL5KJ-RGYFO-KWSZW-JO6M3-VQFAN&referer=babi`;
+    // window.location.href =
+    // `http://apis.map.qq.com/tools/locpicker?search=1&type=0&backurl=${url}&key=Y5VBZ-AL5KJ-RGYFO-KWSZW-JO6M3-VQFAN&referer=babi`;
+    window.location.hash = '/map';
   }
 
   handleSubmit = () => {
