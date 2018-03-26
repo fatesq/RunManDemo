@@ -113,7 +113,7 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, ['global'], () => import('../layouts/MobileLayout')),
     },
     '/home/deliver': {
-      component: dynamicWrapper(app, ['home'], () => import('../routes/Deliver')),
+      component: dynamicWrapper(app, ['home', 'map'], () => import('../routes/Deliver')),
     },
     '/home/get': {
       component: dynamicWrapper(app, [], () => import('../routes/Get')),
@@ -125,10 +125,10 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, [], () => import('../routes/Todo')),
     },
     '/address': {
-      component: dynamicWrapper(app, [], () => import('../routes/Map/Address')),
+      component: dynamicWrapper(app, ['map'], () => import('../routes/Map/Address')),
     },
     '/map': {
-      component: dynamicWrapper(app, [], () => import('../routes/Map')),
+      component: dynamicWrapper(app, ['map'], () => import('../routes/Map')),
     },
     '/coupon': {
       component: dynamicWrapper(app, [], () => import('../routes/Center/Coupon.js')),

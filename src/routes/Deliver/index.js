@@ -14,15 +14,16 @@ const { RadioItem } = Radio;
 const GOODS = ['文件', '鲜花', '蛋糕', '水果生鲜', '食品饮料', '其他'];
 const PRICE = ['0-50元', '50-100元', '100-300元', '300-500元', '500以上'];
 const INSURED = [
-  { value: 0, label: '5.00元保价', extra: '若商品出现损坏或丢失,最高可获得1000.00元赔付' },
-  { value: 1, label: '3.00元保价', extra: '若商品出现损坏或丢失,最高可获得300.00元赔付' },
-  { value: 2, label: '1.00元保价', extra: '若商品出现损坏或丢失,最高可获得100.00元赔付' },
-  { value: 3, label: '不保价', extra: '若商品出现损坏或丢失,最高可获得30元优惠赔付券' },
+  { value: 0, label: '5.00元保价', num: 5, extra: '若商品出现损坏或丢失,最高可获得1000.00元赔付' },
+  { value: 1, label: '3.00元保价', num: 3, extra: '若商品出现损坏或丢失,最高可获得300.00元赔付' },
+  { value: 2, label: '1.00元保价', num: 1, extra: '若商品出现损坏或丢失,最高可获得100.00元赔付' },
+  { value: 3, label: '不保价', num: 0, extra: '若商品出现损坏或丢失,最高可获得30元优惠赔付券' },
 ];
 const nowTimeStamp = Date.now();
 const now = moment(nowTimeStamp);
-@connect(({ home, login, loading }) => ({
+@connect(({ home, login, map, loading }) => ({
   home,
+  map,
   userId: login.id,
   submitting: loading.effects['login/login'],
 }))
@@ -37,7 +38,7 @@ export default class Deliver extends React.PureComponent {
       showInsured: false,
       time: now, // 下单时间
       extra: 1, // 小费
-      orderType: 1, // 帮我送
+      orderType: 0, // 帮我送
       payType: 2, // 支付类型:微信
       goodsType: 5, // 商品类型
       goodsValue: '0-50元', // 价格区间
@@ -74,12 +75,10 @@ export default class Deliver extends React.PureComponent {
   handleSignFace = (val) => {
     this.setState({ signFace: val ? 1 : 2 });
   }
-  handleShowMap = () => {
-    window.wx.getLocation({
-      type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
-      success: (res) => {
-        const { latitude, longitude, speed, accuracy } = res;
-      },
+  handleSend = (type) => {
+    this.props.dispatch({
+      type: 'map/type',
+      payload: type,
     });
   }
   handlePayType = (val) => {
@@ -96,21 +95,13 @@ export default class Deliver extends React.PureComponent {
       goodsValue: this.state.goodsValue,
       goodsWeight: this.state.goodsWeight,
       insuredType: this.state.insuredType,
-      signFace: this.state.insuredType,
+      signFace: this.state.signFace,
       nightShift: '1',
       payPrice: '1',
-      positionDestination: '123,321',
-      positionOriginating: '123,321',
       useId: this.props.userId,
-      sendAddress: '发货地址详情',
-      sendFloor: '发货人楼层门牌',
-      sendName: '发货人姓名',
-      sendPhone: '发货人电话',
       city: '南京',
-      receiverPhone: '收货人电话',
-      receiverName: '收货人姓名',
-      receiverFloor: '收货人楼层门牌',
-      receiverAddress: '收货地址详情',
+      ...this.props.map.send,
+      ...this.props.map.receiver,
     };
     this.props.dispatch({
       type: 'home/submit',
@@ -152,10 +143,8 @@ export default class Deliver extends React.PureComponent {
         </Carousel>
         <List>
           <Item><div className={styles.center}>附近有 <a>3</a> 位跑男为您服务</div></Item>
-          <Link to="/address">
-            <Item arrow="horizontal" onClick={() => {}}>物品寄到哪里去</Item>
-          </Link>
-          <Item arrow="horizontal" onClick={this.handleShowMap}>物品从哪寄</Item>
+          <Item arrow="horizontal" onClick={() => this.handleSend(1)}>物品从哪寄</Item>
+          <Item arrow="horizontal" onClick={() => this.handleSend(2)}>物品寄到哪里去</Item>
           <Item align="top" multipleLine>
             <DatePicker
               // value={this.state.time}
@@ -299,11 +288,9 @@ export default class Deliver extends React.PureComponent {
               // initialValue: 'little ant',
               rules: [
                 { required: true, message: '请输入备注信息' },
-                { validator: this.validateAccount },
               ],
             })}
             clear
-            onChange={(val) => { this.setState({ tip: val }); }}
             error={!!getFieldError('account')}
             onErrorClick={() => {
               alert(getFieldError('account').join('、'));
@@ -347,7 +334,7 @@ export default class Deliver extends React.PureComponent {
         <div className={styles.actionBarContainer}>
           <div className={styles.actionBarWrap}>
             <div className={styles.left}>
-              1234
+              共 { this.state.extra} 元
             </div>
             <div className={styles.trade} onClick={this.handleSubmit}>
               <a className={styles.buy} role="button">

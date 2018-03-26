@@ -1,5 +1,7 @@
 import React from 'react';
+import { connect } from 'dva';
 
+@connect(({ map }) => ({ map }))
 export default class MapC extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -11,8 +13,12 @@ export default class MapC extends React.PureComponent {
     document.getElementById('test').onload = () => {
       iframe.postMessage('hello', 'https://m.amap.com/picker/');
     };
-    window.addEventListener('message', (e) => { 
-      alert('您选择了:' + e.data.name + ',' + e.data.location)
+    window.addEventListener('message', (e) => {
+      console.log(e);
+      this.props.dispatch({
+        type: 'map/send',
+        payload: { ...e.data },
+      });
     }, false);
   }
   render() {

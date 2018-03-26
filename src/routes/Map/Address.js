@@ -1,45 +1,51 @@
 import React from 'react';
+import { connect } from 'dva';
 import { List, InputItem, Button, WhiteSpace, WingBlank, Icon, NavBar } from 'antd-mobile';
 import { createForm } from 'rc-form';
 import { getQueryString } from '../../utils/utils';
 
 const { Item } = List;
+
+@connect(({ map }) => ({ map }))
 @createForm()
 export default class Address extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      name: getQueryString('name', this.props.location.search),
-      // latng: getQueryString('latng', this.props.location.search),
-      // addr: getQueryString('addr', this.props.location.search),
-      // addr: getQueryString('city', this.props.location.search),
     };
   }
 
   openMap = () => {
-    // const length = window.location.href.indexOf('?') < 0 ? 0 : window.location.href.indexOf('?');
-    // const url = encodeURIComponent(length ? window.location.href.slice(0, length) : window.location.href);
-    // window.location.href =
-    // `http://apis.map.qq.com/tools/locpicker?search=1&type=0&backurl=${url}&key=Y5VBZ-AL5KJ-RGYFO-KWSZW-JO6M3-VQFAN&referer=babi`;
     window.location.hash = '/map';
   }
 
   handleSubmit = () => {
-
+    this.props.form.validateFields({ force: true }, (error) => {
+      if (!error) {
+        this.props.dispatch({
+          type: 'map/sendInfo',
+          payload: this.props.form.getFieldsValue(),
+        });
+        console.log(this.props.form.getFieldsValue());
+      } else {
+        alert('填写错误');
+      }
+    });
   }
 
   render() {
     const { getFieldProps, getFieldError } = this.props.form;
+    const { type, send, receiver } = this.props.map;
     return (
       <div>
         <NavBar
           mode="light"
           icon={<Icon type="left" />}
-          onLeftClick={() => window.history.go(-2)}
+          onLeftClick={() => { window.location.hash = '/'; }}
         />
-        <List renderHeader={() => '完善发货人信息'}>
+        <List renderHeader={() => `完善${type === 1 ? '发' : '收'}货人信息`}>
           <InputItem
-            value={this.state.name}
+            value={type === 1 ? send.sendAddress : receiver.receiverAddress}
             extra={<Icon type="right" />}
             onExtraClick={this.openMap}
             disabled
@@ -47,59 +53,54 @@ export default class Address extends React.PureComponent {
           >地址
           </InputItem>
           <InputItem
-            {...getFieldProps('address', {
-              // initialValue: 'little ant',
+            {...getFieldProps('floor', {
+              initialValue: type === 1 ? send.sendFloor : receiver.receiverFloor,
               rules: [
-                { required: true, message: '请输入备注信息' },
-                { validator: this.validateAccount },
+                { required: true, message: '请输入楼层或者门牌号码' },
               ],
             })}
             clear
-            onChange={(val) => { this.setState({ tip: val }); }}
-            error={!!getFieldError('account')}
+            error={!!getFieldError('floor')}
             onErrorClick={() => {
-              alert(getFieldError('account').join('、'));
+              alert(getFieldError('floor').join('、'));
             }}
             placeholder="楼层或者门牌号码"
           >楼层门牌
           </InputItem>
           <InputItem
-            {...getFieldProps('account', {
-              // initialValue: 'little ant',
+            {...getFieldProps('name', {
+              initialValue: type === 1 ? send.sendName : receiver.receiverName,
               rules: [
-                { required: true, message: '请输入备注信息' },
-                { validator: this.validateAccount },
+                { required: true, message: '请输入姓名' },
               ],
             })}
             clear
-            onChange={(val) => { this.setState({ tip: val }); }}
             error={!!getFieldError('name')}
             onErrorClick={() => {
-              alert(getFieldError('account').join('、'));
+              alert(getFieldError('name').join('、'));
             }}
-            placeholder="发货人姓名"
+            placeholder={`${type === 1 ? '发' : '收'}货人姓名`}
           >姓名
           </InputItem>
           <InputItem
-            {...getFieldProps('mobile', {
-              // initialValue: 'little ant',
+            {...getFieldProps('phone', {
+              initialValue: type === 1 ? send.sendPhone : receiver.receiverPhone,
               rules: [
-                { required: true, message: '请输入备注信息' },
-                { validator: this.validateAccount },
+                { required: true, message: '请输入手机号码' },
               ],
             })}
+            type="phone"
             clear
-            onChange={(val) => { this.setState({ tip: val }); }}
-            error={!!getFieldError('account')}
+            error={!!getFieldError('phone')}
             onErrorClick={() => {
-              alert(getFieldError('account').join('、'));
+              alert(getFieldError('phone').join('、'));
             }}
-            placeholder="发货人手机"
+            placeholder={`${type === 1 ? '发' : '收'}货人手机`}
           >电话
           </InputItem>
         </List>
         <WhiteSpace />
-        <WingBlank><Button type="primary">确认地址</Button></WingBlank>
+        <WingBlank><Button onClick={this.handleSubmit} type="primary">确认地址</Button></WingBlank>
       </div>
     );
   }
