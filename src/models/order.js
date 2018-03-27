@@ -1,5 +1,5 @@
 import { routerRedux } from 'dva/router';
-import { wxPay, process } from '../services/api';
+import { wxPay, getOrder, process } from '../services/api';
 import { isWeiXin } from '../utils/utils';
 
 export default {
@@ -23,6 +23,14 @@ export default {
         type: 'saveInfo',
         payload,
       });
+    },
+    *getinfo({ payload }, { call, put }) {
+      const response = yield call(getOrder, payload);
+      yield put({
+        type: 'saveInfo',
+        payload: response,
+      });
+      window.location.hash = '/orderInfo';
     },
     *pay({ payload }, { call, put }) {
       const response = yield call(wxPay, payload);

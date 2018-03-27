@@ -42,6 +42,13 @@ export async function postOrder(params) {
   });
 }
 
+export async function getOrder(params) {
+  return request('/api/order/getOrder', {
+    method: 'POST',
+    data: params,
+  });
+}
+
 export async function wxPay(params) {
   return request('/api/order/wxPay', {
     method: 'POST',
