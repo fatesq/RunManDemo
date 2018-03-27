@@ -48,3 +48,10 @@ export async function wxPay(params) {
     data: params,
   });
 }
+
+export async function process(params) {
+  return request('/api/process', {
+    method: 'GET',
+    data: params,
+  });
+}

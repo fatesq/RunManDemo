@@ -137,7 +137,7 @@ export const getRouterData = (app) => {
       component: dynamicWrapper(app, [], () => import('../routes/Center/Bills.js')),
     },
     '/order': {
-      component: dynamicWrapper(app, [], () => import('../routes/Order')),
+      component: dynamicWrapper(app, ['order'], () => import('../routes/Order/index.js')),
     },
     '/orderInfo': {
       component: dynamicWrapper(app, ['order', 'login'], () => import('../routes/Order/OrderInfo')),

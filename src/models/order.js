@@ -1,5 +1,5 @@
 import { routerRedux } from 'dva/router';
-import { wxPay } from '../services/api';
+import { wxPay, process } from '../services/api';
 import { isWeiXin } from '../utils/utils';
 
 export default {
@@ -7,9 +7,17 @@ export default {
 
   state: {
     obj: '',
+    list: [],
   },
 
   effects: {
+    *list({ payload }, { call, put }) {
+      const response = yield call(process, payload);
+      yield put({
+        type: 'saveList',
+        payload: response.rows,
+      });
+    },
     *info({ payload }, { put }) {
       yield put({
         type: 'saveInfo',
@@ -18,7 +26,6 @@ export default {
     },
     *pay({ payload }, { call, put }) {
       const response = yield call(wxPay, payload);
-      alert(isWeiXin());
       if (isWeiXin()) {
         window.wx.chooseWXPay({
           timestamp: response.timestamp, // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。
@@ -47,6 +54,12 @@ export default {
   },
 
   reducers: {
+    saveList(state, action) {
+      return {
+        ...state,
+        list: action.payload,
+      };
+    },
     saveInfo(state, action) {
       return {
         ...state,

@@ -3,7 +3,6 @@ import { connect } from 'dva';
 import { Icon, Form } from 'antd';
 import { Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio, Flex, Modal, Tag, Checkbox, DatePicker } from 'antd-mobile';
 import moment from 'moment';
-import { Link } from 'dva/router';
 import styles from './index.less';
 
 
