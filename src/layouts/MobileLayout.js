@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Icon } from 'antd';
-import { SegmentedControl, NavBar, Drawer, List } from 'antd-mobile';
+import { Carousel, NavBar, Drawer, List } from 'antd-mobile';
 import { Route, Redirect, Switch, NavLink } from 'dva/router';
 import { getRoutes, isWeiXin } from '../utils/utils';
 import styles from './MobileLayout.less';
@@ -15,6 +15,8 @@ import styles from './MobileLayout.less';
 class MobileLayout extends React.PureComponent {
   state = {
     open: false,
+    data: ['/1.jpg', '/2.jpg', '/3.jpg'],
+    imgHeight: 176,
   }
   componentWillMount() {
     if (!this.props.openid) {
@@ -92,6 +94,32 @@ class MobileLayout extends React.PureComponent {
               </div>
             </div>
           </div>
+          <Carousel
+            autoplay={false}
+            infinite
+            selectedIndex={1}
+            beforeChange={(from, to) => console.log(`slide from ${from} to ${to}`)}
+            afterChange={index => console.log('slide to', index)}
+          >
+            {this.state.data.map(val => (
+              <a
+                key={val}
+                // href="http://www.alipay.com"
+                style={{ display: 'inline-block', width: '100%', height: this.state.imgHeight }}
+              >
+                <img
+                  src={val}
+                  alt=""
+                  style={{ width: '100%', verticalAlign: 'top' }}
+                  onLoad={() => {
+                    // fire window resize event to change height
+                    window.dispatchEvent(new Event('resize'));
+                    this.setState({ imgHeight: 'auto' });
+                  }}
+                />
+              </a>
+            ))}
+          </Carousel>
           <Switch>
             {getRoutes(match.path, routerData).map(item =>
               (

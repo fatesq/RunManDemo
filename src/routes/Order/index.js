@@ -17,15 +17,16 @@ export default class Get extends React.PureComponent {
   componentWillMount() {
     this.getList();
   }
-  getList = (page = 1, rows = 10) => {
+  getList = (data, index) => {
     this.props.dispatch({
       type: 'order/list',
       payload: {
         userId: this.props.userId,
         bean: 'order',
         method: 'pageOrder',
-        page,
-        rows,
+        page: 1,
+        rows: 20,
+        orderStatus: index ? index: '',
       },
     });
   }
@@ -43,6 +44,7 @@ export default class Get extends React.PureComponent {
     return (
       <Tabs
         tabs={status}
+        onChange={(tab, index) => this.getList(tab, index)}
       >
         <div style={{ height: '100%', backgroundColor: '#fff' }}>
           { this.props.order.list.map((item) => {
@@ -70,12 +72,6 @@ export default class Get extends React.PureComponent {
               </Card>
             );
           })}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
-          Content of second tab
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', backgroundColor: '#fff' }}>
-          Content of third tab
         </div>
       </Tabs>
     );

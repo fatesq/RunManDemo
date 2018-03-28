@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Icon, Form } from 'antd';
-import { Carousel, Switch, List, InputItem, Stepper, WhiteSpace, Radio, Flex, Modal, Tag, Checkbox, DatePicker } from 'antd-mobile';
+import { Switch, List, InputItem, Stepper, WhiteSpace, Radio, Flex, Modal, Tag, Checkbox, DatePicker } from 'antd-mobile';
 import moment from 'moment';
 import styles from './index.less';
 
@@ -114,32 +114,6 @@ export default class Deliver extends React.PureComponent {
     const { getFieldProps, getFieldError } = this.props.form;
     return (
       <div>
-        <Carousel
-          autoplay={false}
-          infinite
-          selectedIndex={1}
-          beforeChange={(from, to) => console.log(`slide from ${from} to ${to}`)}
-          afterChange={index => console.log('slide to', index)}
-        >
-          {this.state.data.map(val => (
-            <a
-              key={val}
-              href="http://www.alipay.com"
-              style={{ display: 'inline-block', width: '100%', height: this.state.imgHeight }}
-            >
-              <img
-                src="https://fe.imdada.cn/crane/1.10.13/images/bg.337719.jpg"
-                alt=""
-                style={{ width: '100%', verticalAlign: 'top' }}
-                onLoad={() => {
-                  // fire window resize event to change height
-                  window.dispatchEvent(new Event('resize'));
-                  this.setState({ imgHeight: 'auto' });
-                }}
-              />
-            </a>
-          ))}
-        </Carousel>
         <List>
           <Item><div className={styles.center}>附近有 <a>3</a> 位跑男为您服务</div></Item>
           <Item arrow="horizontal" onClick={() => this.handleSend(1)}>物品从哪寄</Item>
