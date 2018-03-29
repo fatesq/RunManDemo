@@ -1,17 +1,13 @@
 import { routerRedux } from 'dva/router';
-import { postOrder } from '../services/api';
+import { postOrder, length, getConfig } from '../services/api';
 
 export default {
   namespace: 'home',
 
   state: {
     sendType: '',
-    sendInfo: {
-      sendAddress: '',
-      sendFloor: '',
-      sendName: '',
-      sendPhone: '',
-    },
+    results: [],
+    config: undefined,
   },
 
   effects: {
@@ -23,11 +19,20 @@ export default {
       });
       yield put(routerRedux.push('/orderInfo'));
     },
-    *fetchCurrent(_, { call, put }) {
-      const response = yield call(queryCurrent);
+    *getlenth({ payload }, { call, put }) {
+      payload.key = '19da76076593935ade0d45601a59fe01';
+      const response = yield call(length, payload);
+      console.log(response);
       yield put({
         type: 'saveCurrentUser',
-        payload: response,
+        payload: response.results,
+      });
+    },
+    *config({ payload }, { call, put }) {
+      const response = yield call(getConfig, payload);
+      yield put({
+        type: 'saveConfig',
+        payload: response.obj,
       });
     },
   },
@@ -39,19 +44,16 @@ export default {
         list: action.payload,
       };
     },
+    saveConfig(state, action) {
+      return {
+        ...state,
+        config: action.payload,
+      };
+    },
     saveCurrentUser(state, action) {
       return {
         ...state,
-        currentUser: action.payload,
-      };
-    },
-    changeNotifyCount(state, action) {
-      return {
-        ...state,
-        currentUser: {
-          ...state.currentUser,
-          notifyCount: action.payload,
-        },
+        results: action.payload,
       };
     },
   },

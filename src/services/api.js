@@ -62,3 +62,25 @@ export async function process(params) {
     data: params,
   });
 }
+
+export async function cancelOrder(params) {
+  return request('/api/order/cancelOrder', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+
+export async function length(params) {
+  return request('http://restapi.amap.com/v3/distance', {
+    method: 'GET',
+    data: params,
+  });
+}
+
+export async function getConfig(params) {
+  return request('api/config/getConfig', {
+    method: 'POST',
+    data: params,
+  });
+}

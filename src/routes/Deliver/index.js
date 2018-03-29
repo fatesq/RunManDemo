@@ -22,6 +22,7 @@ const nowTimeStamp = Date.now();
 const now = moment(nowTimeStamp);
 @connect(({ home, login, map, loading }) => ({
   home,
+  config: home.config,
   map,
   userId: login.id,
   submitting: loading.effects['login/login'],
@@ -31,8 +32,6 @@ export default class Deliver extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      data: [1, 2, 3],
-      imgHeight: 176,
       showInfo: false,
       showInsured: false,
       time: now, // 下单时间
@@ -44,7 +43,26 @@ export default class Deliver extends React.PureComponent {
       goodsWeight: 1, // 重量
       insuredType: 3, // 保价类型
       signFace: 1,
+      nightCost: 2,
     };
+  }
+  componentDidMount() {
+    this.props.dispatch({
+      type: 'home/config',
+      payload: {
+        city: '南京',
+      },
+    }).then(() => {
+      const { nightCost } = this.props.config;
+      this.setState({ nightCost });
+    });
+    this.props.dispatch({
+      type: 'home/getlenth',
+      payload: {
+        origins: '118.783132,32.038221',
+        destination: '118.768461,32.041279',
+      },
+    });
   }
   onChangeTip = (val) => {
     this.setState({ extra: val });
@@ -287,7 +305,7 @@ export default class Deliver extends React.PureComponent {
           >
             小费
           </Item>
-          <Item extra={`￥ ${1}`}>夜班津贴</Item>
+          <Item extra={`￥ ${this.state.nightCost}`}>夜班津贴</Item>
           <Item extra={`￥ ${1}`}>跑腿费</Item>
         </List>
         <WhiteSpace size="xs" />

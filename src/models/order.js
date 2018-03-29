@@ -1,5 +1,5 @@
 import { routerRedux } from 'dva/router';
-import { wxPay, getOrder, process } from '../services/api';
+import { wxPay, getOrder, process, cancelOrder } from '../services/api';
 import { isWeiXin } from '../utils/utils';
 
 export default {
@@ -58,6 +58,9 @@ export default {
         alert('进入app调用');
         iOSNative.mobilePay(payload.orderId);
       }
+    },
+    *cancel({ payload }, { call, put }) {
+      yield call(cancelOrder, payload);
     },
   },
 
