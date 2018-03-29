@@ -39,15 +39,6 @@ export default class Get extends React.PureComponent {
       },
     });
   }
-  cancelOrder = (orderId) => {
-    this.props.dispatch({
-      type: 'order/cancel',
-      payload: {
-        userId: this.props.userId,
-        orderId,
-      },
-    });
-  }
   render() {
     console.log(this.props.order.list);
     return (
@@ -74,7 +65,7 @@ export default class Get extends React.PureComponent {
                   extra={
                     <div>
                       <Button type="ghost" inline onClick={() => { this.toInfo(item.orderId); }} size="small" style={{ marginRight: '4px' }}>查看订单</Button>
-                      <Button type="ghost" inline onClick={() => { this.cancelOrder(item.orderId); }} size="small" style={{ marginRight: '4px' }}>取消订单</Button>
+                      <Button type="ghost" inline size="small" style={{ marginRight: '4px' }}>取消订单</Button>
                     </div>
                   }
                 />
