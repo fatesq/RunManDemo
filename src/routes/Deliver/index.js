@@ -174,8 +174,12 @@ export default class Deliver extends React.PureComponent {
       <div>
         <List>
           <Item><div className={styles.center}>附近有 <a>3</a> 位跑男为您服务</div></Item>
-          <Item arrow="horizontal" onClick={() => this.handleSend(1)}>物品从哪寄</Item>
-          <Item arrow="horizontal" onClick={() => this.handleSend(2)}>物品寄到哪里去</Item>
+          <Item arrow="horizontal" onClick={() => this.handleSend(1)}>
+            { this.props.map.send.positionOriginating ? this.props.map.send.sendAddress : '物品从哪寄' }
+          </Item>
+          <Item arrow="horizontal" onClick={() => this.handleSend(2)}>
+            { this.props.map.send.positionDestination ? this.props.map.receiver.receiverAddress : '物品寄到哪里去' }
+          </Item>
           <Item align="top" multipleLine>
             <DatePicker
               // value={this.state.time}
