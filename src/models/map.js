@@ -12,7 +12,7 @@ export default {
       sendFloor: '',
       sendName: '',
       sendPhone: '',
-      positionOriginating: '',
+      positionOriginating: undefined,
     },
     receiver: {
       receiverAddress: '',
@@ -20,7 +20,7 @@ export default {
       receiverFloor: '',
       receiverName: '',
       receiverPhone: '',
-      positionDestination: '',
+      positionDestination: undefined,
     },
   },
 

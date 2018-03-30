@@ -23,6 +23,7 @@ const now = moment(nowTimeStamp);
 @connect(({ home, login, map, loading }) => ({
   home,
   config: home.config,
+  results: home.results,
   map,
   userId: login.id,
   submitting: loading.effects['login/login'],
@@ -36,14 +37,20 @@ export default class Deliver extends React.PureComponent {
       showInsured: false,
       time: now, // 下单时间
       extra: 1, // 小费
-      orderType: 0, // 帮我送
+      orderType: 1, // 帮我送
       payType: 2, // 支付类型:微信
       goodsType: 5, // 商品类型
       goodsValue: '0-50元', // 价格区间
       goodsWeight: 1, // 重量
       insuredType: 3, // 保价类型
       signFace: 1,
-      nightCost: 2,
+      nightCost: 0,
+      buyCost: 0,
+      baseWeight: 0,
+      weightCost: 0,
+      baseDistance: 0,
+      distanceCost: 0,
+      timeAmount: 0,
     };
   }
   componentDidMount() {
@@ -53,16 +60,21 @@ export default class Deliver extends React.PureComponent {
         city: '南京',
       },
     }).then(() => {
-      const { nightCost } = this.props.config;
-      this.setState({ nightCost });
+      const { buyCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost } = this.props.config;
+      this.setState({ buyCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost });
     });
-    this.props.dispatch({
-      type: 'home/getlenth',
-      payload: {
-        origins: '118.783132,32.038221',
-        destination: '118.768461,32.041279',
-      },
-    });
+    if (this.props.map.send.positionOriginating && this.props.map.receiver.positionDestination) {
+      this.props.dispatch({
+        type: 'home/getlenth',
+        payload: {
+          origins: this.props.map.send.positionOriginating,
+          destination: this.props.map.receiver.positionDestination,
+        },
+      }).then(() => {
+        const { distance } = this.props.results[0];
+        this.setState({ distance });
+      });
+    }
   }
   onChangeTip = (val) => {
     this.setState({ extra: val });
@@ -103,20 +115,40 @@ export default class Deliver extends React.PureComponent {
   }
 
   handleSubmit = () => {
+    if (!this.props.map.send.positionOriginating) {
+      alert('未选择发件地址');
+      return;
+    }
+    if (!this.props.map.receiver.positionDestination) {
+      alert('未选择收件地址');
+      return;
+    }
+    const { extra, payType, goodsType, goodsValue,
+      goodsWeight, insuredType, signFace, nightCost, buyCost, baseWeight, weightCost,
+      baseDistance, distanceCost, distance, timeAmount } = this.state;
+    const distanceAmount
+    = (distanceCost * 100) * Math.round((distance / 1000) > 3 ? (distance / 1000) - 3 : 0);
+    const payPrice = ((extra * 100) + (buyCost * 100) + (baseWeight * 100) + (baseDistance * 100)
+    + ((weightCost * 100) * (goodsWeight > 5 ? goodsWeight - 5 : 0))
+    + distanceAmount
+    + (INSURED[insuredType].num * 100));
     const info = {
+      useId: this.props.userId,
       orderType: this.state.orderType,
       departureTime: this.state.time,
-      extra: this.state.extra,
-      payType: this.state.payType,
-      goodsType: this.state.goodsType,
-      goodsValue: this.state.goodsValue,
-      goodsWeight: this.state.goodsWeight,
-      insuredType: this.state.insuredType,
-      signFace: this.state.signFace,
-      nightShift: '1',
-      payPrice: '1',
-      useId: this.props.userId,
+      goodsType,
+      goodsValue,
+      goodsWeight,
+      payType,
+      insuredType,
+      signFace,
+      extra: extra * 100,
+      payPrice,
+      distanceAmount,
+      timeAmount,
+      nightShift: nightCost * 100,
       city: '南京',
+      distance,
       ...this.props.map.send,
       ...this.props.map.receiver,
     };
@@ -130,6 +162,14 @@ export default class Deliver extends React.PureComponent {
 
   render() {
     const { getFieldProps, getFieldError } = this.props.form;
+    const { showInfo, showInsured, extra, payType, goodsType, goodsValue,
+      goodsWeight, insuredType, signFace, nightCost, buyCost, baseWeight, weightCost,
+      baseDistance, distanceCost, distance } = this.state;
+
+    const payPrice = ((extra * 100) + (buyCost * 100) + (baseWeight * 100) + (baseDistance * 100)
+    + ((weightCost * 100) * (goodsWeight > 5 ? goodsWeight - 5 : 0))
+    + ((distanceCost * 100) * Math.round((distance / 1000) > 3 ? (distance / 1000) - 3 : 0)) 
+    + (INSURED[insuredType].num * 100)) / 100;
     return (
       <div>
         <List>
@@ -155,15 +195,15 @@ export default class Deliver extends React.PureComponent {
             选择物品信息
             <Brief>
               <Flex style={{ textAlign: 'center' }}>
-                <Flex.Item className={styles.column} ><Icon type="appstore" /><span>{GOODS[this.state.goodsType]}</span></Flex.Item>
-                <Flex.Item className={styles.column} ><Icon type="pay-circle" /><span>{this.state.goodsValue}</span></Flex.Item>
-                <Flex.Item className={styles.column} ><Icon type="tag" /><span>{this.state.goodsWeight}公斤</span></Flex.Item>
+                <Flex.Item className={styles.column} ><Icon type="appstore" /><span>{GOODS[goodsType]}</span></Flex.Item>
+                <Flex.Item className={styles.column} ><Icon type="pay-circle" /><span>{goodsValue}</span></Flex.Item>
+                <Flex.Item className={styles.column} ><Icon type="tag" /><span>{goodsWeight}公斤</span></Flex.Item>
               </Flex>
             </Brief>
           </Item>
           <Modal
             popup
-            visible={this.state.showInfo}
+            visible={showInfo}
             onClose={this.handleShowBasic}
             animationType="slide-up"
           >
@@ -184,7 +224,7 @@ export default class Deliver extends React.PureComponent {
                       return (
                         <Tag
                           className={styles.goodsTag}
-                          selected={this.state.goodsType === index}
+                          selected={goodsType === index}
                           key={i}
                           onChange={() => this.handleGoodsType(index)}
                         >{i}
@@ -202,7 +242,7 @@ export default class Deliver extends React.PureComponent {
                       return (
                         <Tag
                           className={styles.goodsTag}
-                          selected={this.state.goodsValue === i}
+                          selected={goodsValue === i}
                           key={i}
                           onChange={() => this.handleGoodsValue(i)}
                         >{i}
@@ -220,7 +260,7 @@ export default class Deliver extends React.PureComponent {
                     showNumber
                     min={1}
                     max={15}
-                    value={this.state.goodsWeight}
+                    value={goodsWeight}
                     onChange={this.onChangWeight}
                   />
                   <div>5公斤以内不加价（最大15公斤）</div>
@@ -228,10 +268,10 @@ export default class Deliver extends React.PureComponent {
               </Item>
             </List>
           </Modal>
-          <Item arrow="horizontal" extra={INSURED[this.state.insuredType].label} onClick={this.handleShowInsured}>保价</Item>
+          <Item arrow="horizontal" extra={INSURED[insuredType].label} onClick={this.handleShowInsured}>保价</Item>
           <Modal
             popup
-            visible={this.state.showInsured}
+            visible={showInsured}
             onClose={this.handleShowInsured}
             animationType="slide-up"
           >
@@ -247,7 +287,7 @@ export default class Deliver extends React.PureComponent {
               {INSURED.map(i => (
                 <RadioItem
                   key={i.value}
-                  checked={this.state.insuredType === i.value}
+                  checked={insuredType === i.value}
                   onChange={() => this.onChangeInsured(i.value)}
                 >
                   {i.label}<List.Item.Brief>{i.extra}</List.Item.Brief>
@@ -265,7 +305,7 @@ export default class Deliver extends React.PureComponent {
             extra={
               <Switch
                 {...getFieldProps('Switch1', {
-                  initialValue: this.state.signFace === 1,
+                  initialValue: signFace === 1,
                   valuePropName: 'checked',
                 })}
                 onClick={this.handleSignFace}
@@ -298,15 +338,15 @@ export default class Deliver extends React.PureComponent {
                 style={{ width: '100%', minWidth: '100px' }}
                 showNumber
                 min={0}
-                value={this.state.extra}
+                value={extra}
                 onChange={this.onChangeTip}
               />
             }
           >
             小费
           </Item>
-          <Item extra={`￥ ${this.state.nightCost}`}>夜班津贴</Item>
-          <Item extra={`￥ ${1}`}>跑腿费</Item>
+          <Item extra={`￥ ${nightCost}`}>夜班津贴</Item>
+          <Item extra={`￥ ${buyCost}`}>跑腿费</Item>
         </List>
         <WhiteSpace size="xs" />
         <List>
@@ -314,7 +354,7 @@ export default class Deliver extends React.PureComponent {
             支付方式
             <RadioItem
               style={{ paddingLeft: 0 }}
-              checked={this.state.payType === 2}
+              checked={payType === 2}
               onChange={() => { this.handlePayType(2); }}
             >
               <Icon type="wechat" style={{ color: '#1aad19' }} />&nbsp;微信支付
@@ -325,7 +365,7 @@ export default class Deliver extends React.PureComponent {
         <div className={styles.actionBarContainer}>
           <div className={styles.actionBarWrap}>
             <div className={styles.left}>
-              共 { this.state.extra} 元
+              共 { payPrice } 元
             </div>
             <div className={styles.trade} onClick={this.handleSubmit}>
               <a className={styles.buy} role="button">
