@@ -1,24 +1,26 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Icon, Form } from 'antd';
-import { Switch, List, TextareaItem, InputItem, Stepper, WhiteSpace, Radio, Flex, Modal, Tag, Checkbox, DatePicker } from 'antd-mobile';
 import moment from 'moment';
-import styles from './index.less';
+import { Icon, Form } from 'antd';
+import { Switch, List, InputItem, Stepper, WhiteSpace, Radio, Flex, Modal, Tag, Checkbox, DatePicker } from 'antd-mobile';
 import { isWeiXin } from '../../utils/utils';
+import styles from './index.less';
+
 
 const { Item } = List;
 const { Brief } = Item;
 const { AgreeItem } = Checkbox;
 const { RadioItem } = Radio;
-const GOODS = ['随意购', '超市代购', '买烟买酒', '日常用品', '买早餐', '买宵夜', '买水果', '买药品'];
+const GOODS = ['文件', '鲜花', '蛋糕', '水果生鲜', '食品饮料', '其他'];
+const PRICE = ['0-50元', '50-100元', '100-300元', '300-500元', '500以上'];
 const INSURED = [
   { value: 0, label: '5.00元保价', num: 5, extra: '若商品出现损坏或丢失,最高可获得1000.00元赔付' },
   { value: 1, label: '3.00元保价', num: 3, extra: '若商品出现损坏或丢失,最高可获得300.00元赔付' },
   { value: 2, label: '1.00元保价', num: 1, extra: '若商品出现损坏或丢失,最高可获得100.00元赔付' },
   { value: 3, label: '不保价', num: 0, extra: '若商品出现损坏或丢失,最高可获得30元优惠赔付券' },
 ];
-const nowTimeStamp = Date.now();
-const now = moment(nowTimeStamp);
+const now = moment().format('YYYY-MM-DD HH:MM:SS');
+console.log(now)
 @connect(({ home, login, map, loading }) => ({
   home,
   config: home.config,
@@ -28,18 +30,19 @@ const now = moment(nowTimeStamp);
   submitting: loading.effects['login/login'],
 }))
 @Form.create()
-export default class Buy extends React.PureComponent {
+export default class Todo extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
+      radio: 1,
       showInfo: false,
       showInsured: false,
       time: now, // 下单时间
       extra: 1, // 小费
       orderType: 1, // 帮我送
       payType: 2, // 支付类型:微信
-      goodsType: 0, // 商品类型
-      goodsValue: 0, // 价格区间
+      goodsType: 5, // 商品类型
+      goodsValue: '0-50元', // 价格区间
       goodsWeight: 1, // 重量
       insuredType: 3, // 保价类型
       signFace: 1,
@@ -59,8 +62,8 @@ export default class Buy extends React.PureComponent {
         city: '南京',
       },
     }).then(() => {
-      const { buyCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost } = this.props.config;
-      this.setState({ buyCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost });
+      const { giveCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost } = this.props.config;
+      this.setState({ buyCost: giveCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost });
     });
     if (this.props.map.send.positionOriginating && this.props.map.receiver.positionDestination) {
       this.props.dispatch({
@@ -75,6 +78,10 @@ export default class Buy extends React.PureComponent {
       });
     }
   }
+  onRadioChange = (radio) => {
+    this.setState({ radio });
+  }
+
   onChangeTip = (val) => {
     this.setState({ extra: val });
   }
@@ -98,7 +105,7 @@ export default class Buy extends React.PureComponent {
     this.setState({ goodsValue: val });
   }
   handleTime = (val) => {
-    this.setState({ time: val });
+    this.setState({ time: moment(val).format('YYYY-MM-DD HH:MM:SS') });
   }
   handleSignFace = (val) => {
     this.setState({ signFace: val ? 1 : 2 });
@@ -142,7 +149,7 @@ export default class Buy extends React.PureComponent {
       insuredType,
       signFace,
       extra: extra * 100,
-      payPrice,
+      payPrice: 1,
       distanceAmount,
       timeAmount,
       nightShift: nightCost * 100,
@@ -162,7 +169,7 @@ export default class Buy extends React.PureComponent {
 
   render() {
     const { getFieldProps, getFieldError } = this.props.form;
-    const { showInsured, extra, payType, goodsType, goodsValue,
+    const { showInfo, showInsured, extra, payType, goodsType, goodsValue,
       goodsWeight, insuredType, signFace, nightCost, buyCost, baseWeight, weightCost,
       baseDistance, distanceCost, distance } = this.state;
 
@@ -174,11 +181,25 @@ export default class Buy extends React.PureComponent {
       <div>
         <List>
           <Item><div className={styles.center}>附近有 <a>3</a> 位跑男为您服务</div></Item>
+          <Item>
+            <Flex>
+              <Flex.Item>
+                <Radio checked={this.state.radio === 0} name="logId" onChange={() => this.onRadioChange(0)}>
+                  需要取资料
+                </Radio>
+              </Flex.Item>
+              <Flex.Item style={{ textAlign: 'right' }}>
+                <Radio className={styles['my-radio']} checked={this.state.radio === 1} name="logId" onChange={() => this.onRadioChange(1)}>
+                  不需要取资料
+                </Radio>
+              </Flex.Item>
+            </Flex>
+          </Item>
           <Item arrow="horizontal" onClick={() => this.handleSend(1)}>
-            { this.props.map.send.positionOriginating ? this.props.map.send.sendAddress : '选择购买地址' }
+            { this.props.map.send.positionOriginating ? this.props.map.send.sendAddress : this.state.radio == 0 ? '取资料地址' : '办事地址' }
           </Item>
           <Item arrow="horizontal" onClick={() => this.handleSend(2)}>
-            { this.props.map.send.positionDestination ? this.props.map.receiver.receiverAddress : '选择收货地址' }
+            { this.props.map.send.positionDestination ? this.props.map.receiver.receiverAddress : '物品送到哪里去' }
           </Item>
           <Item align="top" multipleLine>
             <DatePicker
@@ -195,51 +216,83 @@ export default class Buy extends React.PureComponent {
         </List>
         <WhiteSpace size="xs" />
         <List>
-          <div className={styles['tag-container']}>
-            <Flex wrap="wrap">
-              {GOODS.map((i, index) => {
-                return (
-                  <Tag
-                    className={styles.goodsTag}
-                    selected={goodsType === index}
-                    key={i}
-                    onChange={() => this.handleGoodsType(index)}
-                  >{i}
-                  </Tag>
-                );
-              })}
-            </Flex>
-          </div>
-          <TextareaItem
-            title="购买物品"
-            {...getFieldProps('account', {
-              // initialValue: 'little ant',
-              rules: [
-                { required: true, message: '请输入您需要购买的商品' },
-              ],
-            })}
-            clear
-            error={!!getFieldError('account')}
-            onErrorClick={() => {
-              alert(getFieldError('account').join('、'));
-            }}
-            placeholder="请输入您需要购买的商品"
-            autoHeight
-          />
-          <Item extra="按票据线下支付">物品价格</Item>
-          <Item
-            extra={
-              <Stepper
-                style={{ width: '100%', minWidth: '100px' }}
-                showNumber
-                min={0}
-                value={goodsWeight}
-                onChange={this.onChangWeight}
-              />
-            }
-          >
-            物品重量
+          <Item onClick={this.handleShowBasic}>
+            选择物品信息
+            <Brief>
+              <Flex style={{ textAlign: 'center' }}>
+                <Flex.Item className={styles.column} ><Icon type="appstore" /><span>{GOODS[goodsType]}</span></Flex.Item>
+                <Flex.Item className={styles.column} ><Icon type="pay-circle" /><span>{goodsValue}</span></Flex.Item>
+                <Flex.Item className={styles.column} ><Icon type="tag" /><span>{goodsWeight}公斤</span></Flex.Item>
+              </Flex>
+            </Brief>
           </Item>
+          <Modal
+            popup
+            visible={showInfo}
+            onClose={this.handleShowBasic}
+            animationType="slide-up"
+          >
+            <List
+              renderHeader={
+                <Flex justify="between">
+                  <Flex.Item onClick={this.handleShowBasic}>取消</Flex.Item>
+                  <Flex.Item style={{ textAlign: 'center' }}>选择物品信息</Flex.Item >
+                  <Flex.Item style={{ textAlign: 'right' }} onClick={this.handleShowBasic} >确认</Flex.Item >
+                </Flex>
+              }
+            >
+              <Item multipleLine>
+                物品类型
+                <Brief>
+                  <Flex wrap="wrap">
+                    {GOODS.map((i, index) => {
+                      return (
+                        <Tag
+                          className={styles.goodsTag}
+                          selected={goodsType === index}
+                          key={i}
+                          onChange={() => this.handleGoodsType(index)}
+                        >{i}
+                        </Tag>
+                      );
+                    })}
+                  </Flex>
+                </Brief>
+              </Item>
+              <Item multipleLine>
+                物品价值
+                <Brief>
+                  <Flex wrap="wrap">
+                    {PRICE.map((i) => {
+                      return (
+                        <Tag
+                          className={styles.goodsTag}
+                          selected={goodsValue === i}
+                          key={i}
+                          onChange={() => this.handleGoodsValue(i)}
+                        >{i}
+                        </Tag>
+                      );
+                    })}
+                  </Flex>
+                </Brief>
+              </Item>
+              <Item multipleLine>
+                物品重量
+                <Brief style={{ textAlign: 'center' }}>
+                  <Stepper
+                    style={{ width: '100%', maxWidth: '50%' }}
+                    showNumber
+                    min={1}
+                    max={15}
+                    value={goodsWeight}
+                    onChange={this.onChangWeight}
+                  />
+                  <div>5公斤以内不加价（最大15公斤）</div>
+                </Brief>
+              </Item>
+            </List>
+          </Modal>
           <Item arrow="horizontal" extra={INSURED[insuredType].label} onClick={this.handleShowInsured}>保价</Item>
           <Modal
             popup
@@ -286,6 +339,21 @@ export default class Buy extends React.PureComponent {
           >
               当面签收
           </Item>
+          <InputItem
+            {...getFieldProps('account', {
+              // initialValue: 'little ant',
+              rules: [
+                { required: true, message: '请输入备注信息' },
+              ],
+            })}
+            clear
+            error={!!getFieldError('account')}
+            onErrorClick={() => {
+              alert(getFieldError('account').join('、'));
+            }}
+            placeholder="请输入您的备注信息"
+          >备注信息
+          </InputItem>
         </List>
         <WhiteSpace size="xs" />
         <List>
@@ -318,7 +386,7 @@ export default class Buy extends React.PureComponent {
             </RadioItem>
             {
               isWeiXin() ?
-                '' :
+              '' :
                 (
                   <RadioItem
                     style={{ paddingLeft: 0 }}
@@ -327,7 +395,7 @@ export default class Buy extends React.PureComponent {
                   >
                     <Icon type="alipay-circle" style={{ color: '#7EC0EE' }} />&nbsp;支付宝
                   </RadioItem>
-                )
+                ) 
             }
           </Item>
         </List>

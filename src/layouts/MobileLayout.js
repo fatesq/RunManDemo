@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Icon } from 'antd';
-import { Carousel, NavBar, Drawer, List } from 'antd-mobile';
+import { Carousel, Drawer, List } from 'antd-mobile';
 import { Route, Redirect, Switch, NavLink } from 'dva/router';
 import { getRoutes, isWeiXin } from '../utils/utils';
 import styles from './MobileLayout.less';
@@ -58,19 +58,11 @@ class MobileLayout extends React.PureComponent {
     const { routerData, match } = this.props;
     return (
       <div>
-        {
-          // <NavBar
-          //   mode="light"
-          //   icon={<Icon type="user" />}
-          //   onLeftClick={this.onOpenChange}
-          //   rightContent={<Icon type="message" />}
-          // >
-          //   <SegmentedControl values={['帮我送', '帮我取', '帮我买', '帮办事']} style={{ width: '100%' }} />
-          // </NavBar>
-        }
         <Drawer
           className={styles.myDrawer}
+          drawerBackgroundColor="#FFFFFF"
           style={{ minHeight: document.documentElement.clientHeight }}
+          sidebarStyle={{ backgroundColor: '#FFF' }}
           enableDragHandle
           sidebar={sidebar}
           open={this.state.open}

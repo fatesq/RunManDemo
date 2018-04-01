@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'dva';
+import moment from 'moment';
 import { Icon, Form } from 'antd';
 import { Switch, List, InputItem, Stepper, WhiteSpace, Radio, Flex, Modal, Tag, Checkbox, DatePicker } from 'antd-mobile';
-import moment from 'moment';
+import { isWeiXin } from '../../utils/utils';
 import styles from './index.less';
 
 
@@ -18,8 +19,8 @@ const INSURED = [
   { value: 2, label: '1.00元保价', num: 1, extra: '若商品出现损坏或丢失,最高可获得100.00元赔付' },
   { value: 3, label: '不保价', num: 0, extra: '若商品出现损坏或丢失,最高可获得30元优惠赔付券' },
 ];
-const nowTimeStamp = Date.now();
-const now = moment(nowTimeStamp);
+const now = moment().format('YYYY-MM-DD HH:MM:SS');
+console.log(now)
 @connect(({ home, login, map, loading }) => ({
   home,
   config: home.config,
@@ -60,8 +61,8 @@ export default class Deliver extends React.PureComponent {
         city: '南京',
       },
     }).then(() => {
-      const { buyCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost } = this.props.config;
-      this.setState({ buyCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost });
+      const { giveCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost } = this.props.config;
+      this.setState({ buyCost: giveCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost });
     });
     if (this.props.map.send.positionOriginating && this.props.map.receiver.positionDestination) {
       this.props.dispatch({
@@ -99,7 +100,7 @@ export default class Deliver extends React.PureComponent {
     this.setState({ goodsValue: val });
   }
   handleTime = (val) => {
-    this.setState({ time: val });
+    this.setState({ time: moment(val).format('YYYY-MM-DD HH:MM:SS') });
   }
   handleSignFace = (val) => {
     this.setState({ signFace: val ? 1 : 2 });
@@ -143,12 +144,13 @@ export default class Deliver extends React.PureComponent {
       insuredType,
       signFace,
       extra: extra * 100,
-      payPrice,
+      payPrice: 1,
       distanceAmount,
       timeAmount,
       nightShift: nightCost * 100,
       city: '南京',
       distance,
+      tip: this.props.form.getFieldsValue().account,
       ...this.props.map.send,
       ...this.props.map.receiver,
     };
@@ -363,6 +365,19 @@ export default class Deliver extends React.PureComponent {
             >
               <Icon type="wechat" style={{ color: '#1aad19' }} />&nbsp;微信支付
             </RadioItem>
+            {
+              isWeiXin() ?
+                '' :
+                (
+                  <RadioItem
+                    style={{ paddingLeft: 0 }}
+                    checked={payType === 1}
+                    onChange={() => { this.handlePayType(1); }}
+                  >
+                    <Icon type="alipay-circle" style={{ color: '#7EC0EE' }} />&nbsp;支付宝
+                  </RadioItem>
+                )
+            }
           </Item>
         </List>
         <WhiteSpace />

@@ -56,6 +56,13 @@ export async function wxPay(params) {
   });
 }
 
+export async function aliPay(params) {
+  return request('/api/order/alipaySign', {
+    method: 'POST',
+    data: params,
+  });
+}
+
 export async function process(params) {
   return request('/api/process', {
     method: 'GET',
@@ -65,6 +72,14 @@ export async function process(params) {
 
 export async function cancelOrder(params) {
   return request('/api/order/cancelOrder', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+
+export async function signOrder(params) {
+  return request('/api/order/signOrder', {
     method: 'POST',
     data: params,
   });
@@ -84,3 +99,5 @@ export async function getConfig(params) {
     data: params,
   });
 }
+
+

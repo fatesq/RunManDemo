@@ -25,7 +25,7 @@ export default class Get extends React.PureComponent {
         bean: 'order',
         method: 'pageOrder',
         page: 1,
-        rows: 20,
+        rows: 999,
         orderStatus: index ? index : '',
       },
     });
@@ -42,6 +42,15 @@ export default class Get extends React.PureComponent {
   cancelOrder = (orderId) => {
     this.props.dispatch({
       type: 'order/cancel',
+      payload: {
+        userId: this.props.userId,
+        orderId,
+      },
+    });
+  }
+  signOrder = (orderId) => {
+    this.props.dispatch({
+      type: 'order/sign',
       payload: {
         userId: this.props.userId,
         orderId,
@@ -74,7 +83,16 @@ export default class Get extends React.PureComponent {
                   extra={
                     <div>
                       <Button type="ghost" inline onClick={() => { this.toInfo(item.orderId); }} size="small" style={{ marginRight: '4px' }}>查看订单</Button>
-                      <Button type="ghost" inline onClick={() => { this.cancelOrder(item.orderId); }} size="small" style={{ marginRight: '4px' }}>取消订单</Button>
+                      {
+                        item.orderStatus == 1 ?
+                          <Button type="ghost" inline onClick={() => { this.cancelOrder(item.orderId); }} size="small" style={{ marginRight: '4px' }}>取消订单</Button>
+                        : ''
+                      }
+                      {
+                        item.orderStatus == 5 ?
+                          <Button type="ghost" inline onClick={() => { this.signOrder(item.orderId); }} size="small" style={{ marginRight: '4px' }}>完成订单</Button>
+                        : ''
+                      }
                     </div>
                   }
                 />
