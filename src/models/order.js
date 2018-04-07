@@ -19,6 +19,7 @@ export default {
       });
     },
     *info({ payload }, { put }) {
+      console.log(payload, 'info')
       yield put({
         type: 'saveInfo',
         payload,
@@ -84,6 +85,7 @@ export default {
       };
     },
     saveInfo(state, action) {
+      console.log(action, 'action')
       return {
         ...state,
         obj: action.payload.obj,

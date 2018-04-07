@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Tabs, Card, List, Button } from 'antd-mobile';
+import { Tabs, Card, List, Button, Modal, Flex, TextareaItem } from 'antd-mobile';
+import { Rate } from 'antd';
+import { comment } from '../../services/api'
 
 
 const { Item } = List;
@@ -14,6 +16,12 @@ const status = [{ title: '全部' }, { title: '待接单' }, { title: '待取单
   submitting: loading.effects['order/list'],
 }))
 export default class Get extends React.PureComponent {
+  state = {
+    id: '',
+    show: false,
+    val: 5,
+    txt: '',
+  }
   componentWillMount() {
     this.getList();
   }
@@ -57,6 +65,28 @@ export default class Get extends React.PureComponent {
       },
     });
   }
+  Comment = (id, stars) => {
+    if (stars) {
+      alert('您已经评价过了');
+    } else {
+      this.setState({ id, show: true });
+    }
+  }
+  handleComment = () => {
+    const info = {
+      orderId: this.state.id,
+      comment: this.state.txt,
+      stars: this.state.val,
+    }
+    comment(info).then((res) => {
+      if (res.status == '00') {
+        this.setState({ show: false });
+      } else {
+        alert(res.msg)
+        this.setState({ show: false });
+      }
+    })
+  }
   render() {
     console.log(this.props.order.list);
     return (
@@ -79,6 +109,32 @@ export default class Get extends React.PureComponent {
                   </Item>
                   <Item extra={`合计 ${item.payPrice / 100}`}>{item.createTime}</Item>
                 </Card.Body>
+                <Modal
+                  popup
+                  visible={this.state.show}
+                  onClose={() => { this.setState({ show: false }); }}
+                  animationType="slide-up"
+                >
+                  <List
+                    renderHeader={
+                      <Flex justify="between">
+                        <Flex.Item onClick={() => { this.setState({ show: false }); }}>取消</Flex.Item>
+                        <Flex.Item style={{ textAlign: 'center' }}>评价跑男</Flex.Item >
+                        <Flex.Item style={{ textAlign: 'right' }} onClick={this.handleComment}>确认</Flex.Item >
+                      </Flex>
+                    }
+                  >
+                    <Rate value={this.state.val} onChange={(val) => { this.setState({ val }); }} />
+                    <TextareaItem
+                      title="其他想说的:"
+                      clear
+                      placeholder="点击输入其他的评价描述"
+                      autoHeight
+                      rows="3"
+                      onChange={(txt) => { this.setState({ txt }); }}
+                    />
+                  </List>
+                </Modal>
                 <Card.Footer
                   extra={
                     <div>
@@ -89,8 +145,13 @@ export default class Get extends React.PureComponent {
                         : ''
                       }
                       {
-                        item.orderStatus == 5 ?
+                        item.orderStatus == 3 ?
                           <Button type="ghost" inline onClick={() => { this.signOrder(item.orderId); }} size="small" style={{ marginRight: '4px' }}>完成订单</Button>
+                        : ''
+                      }
+                      {
+                        item.orderStatus == 4 ?
+                          <Button type="ghost" inline onClick={() => { this.Comment(item.orderId, item.stars); }} size="small" style={{ marginRight: '4px' }}>评价跑男</Button>
                         : ''
                       }
                     </div>

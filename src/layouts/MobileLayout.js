@@ -32,7 +32,7 @@ class MobileLayout extends React.PureComponent {
 
   render() {
     const sidebar = (
-      <List>
+      <List style={{ height: '100%' }}>
         <List.Item
           thumb="https://zos.alipayobjects.com/rmsportal/eOZidTabPoEbPeU.png"
           multipleLine
@@ -48,11 +48,29 @@ class MobileLayout extends React.PureComponent {
           <NavLink to="/order">我的订单</NavLink>
         </List.Item>
         <List.Item>
-          运费说明
+          <NavLink to="/yf">运费说明</NavLink>
         </List.Item>
         <List.Item>
-          意见反馈
+          <NavLink to="/yj">意见反馈</NavLink>
         </List.Item>
+        <div style={{ position: 'fixed', bottom: 0, display: 'flex', width: '100%' }}>
+          <div style={{ flex: 1, textAlign: 'center'}}>
+            <NavLink to="/zm">
+              <img src="/paonanzhaomu.jpg" alt="/" />
+            </NavLink>
+            <div>跑男招募</div>
+          </div>
+          <div style={{ flex: 1, textAlign: 'center' }}>
+            <NavLink to="/yq">
+              <img src="/yaoqinghaoyou.jpg" alt="/YQ" />
+            </NavLink>
+            <div>邀请好友</div>
+          </div>
+          <div style={{ flex: 1, textAlign: 'center' }} onClick={() => { window.location.hash = '/order'; }}>
+            <img src="/wodedingdan.jpg" alt="/order" />
+            <div>我的订单</div>
+          </div>
+        </div>
       </List>
     );
     const { routerData, match } = this.props;
@@ -62,7 +80,7 @@ class MobileLayout extends React.PureComponent {
           className={styles.myDrawer}
           drawerBackgroundColor="#FFFFFF"
           style={{ minHeight: document.documentElement.clientHeight }}
-          sidebarStyle={{ backgroundColor: '#FFF' }}
+          sidebarStyle={{ backgroundColor: '#FFF', width: '60%' }}
           enableDragHandle
           sidebar={sidebar}
           open={this.state.open}

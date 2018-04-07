@@ -100,4 +100,23 @@ export async function getConfig(params) {
   });
 }
 
+export async function coupon(params) {
+  return request('api/coupon/select', {
+    method: 'POST',
+    data: params,
+  });
+}
 
+export async function invoice(params) {
+  return request('api/order/invoice', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function comment(params) {
+  return request('api/order/comment', {
+    method: 'POST',
+    data: params,
+  });
+}

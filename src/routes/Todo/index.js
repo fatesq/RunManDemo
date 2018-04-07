@@ -1,35 +1,204 @@
 import React from 'react';
+import { connect } from 'dva';
+import moment from 'moment';
 import { Icon, Form } from 'antd';
-import { WingBlank, List, InputItem, Stepper, WhiteSpace, Radio, Flex, Tag, Checkbox, DatePicker } from 'antd-mobile';
-import { Link } from 'dva/router';
+import { Switch, List, InputItem, Stepper, WhiteSpace, Radio, Flex, Modal, Tag, Checkbox, DatePicker } from 'antd-mobile';
+import { isWeiXin } from '../../utils/utils';
 import styles from './index.less';
 
 
 const { Item } = List;
+const { Brief } = Item;
+const { AgreeItem } = Checkbox;
 const { RadioItem } = Radio;
+const GOODS = ['其他', '医院排队', '小时工', '万能排队', '照看宠物', '餐厅占座', '购物', '公务'];
+const INSURED = [
+  { value: 0, label: '5.00元保价', num: 5, extra: '若商品出现损坏或丢失,最高可获得1000.00元赔付' },
+  { value: 1, label: '3.00元保价', num: 3, extra: '若商品出现损坏或丢失,最高可获得300.00元赔付' },
+  { value: 2, label: '1.00元保价', num: 1, extra: '若商品出现损坏或丢失,最高可获得100.00元赔付' },
+  { value: 3, label: '不保价', num: 0, extra: '若商品出现损坏或丢失,最高可获得30元优惠赔付券' },
+];
+const now = moment().format('YYYY-MM-DD HH:MM:SS');
+console.log(now)
+@connect(({ home, login, map, loading }) => ({
+  home,
+  config: home.config,
+  results: home.results,
+  map,
+  userId: login.id,
+  submitting: loading.effects['login/login'],
+}))
 @Form.create()
 export default class Todo extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
-      showInsured: false,
       radio: 1,
-      tip: 1,
+      showInfo: false,
+      showInsured: false,
+      time: now, // 下单时间
+      extra: 1, // 小费
+      orderType: 4, // 帮我送
+      payType: 2, // 支付类型:微信
+      goodsType: 0, // 商品类型
+      goodsValue: '0-50元', // 价格区间
+      goodsWeight: 1, // 重量
+      insuredType: 3, // 保价类型
+      signFace: 1,
+      nightCost: 0,
+      buyCost: 0,
+      baseWeight: 0,
+      weightCost: 0,
+      baseDistance: 0,
+      distanceCost: 0,
+      timeAmount: 0,
+      workCost: 0,
+      minuteCost: 0,
+      time2: 30
     };
+  }
+  componentDidMount() {
+    this.props.dispatch({
+      type: 'home/config',
+      payload: {
+        city: '南京',
+      },
+    }).then(() => {
+      const { giveCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost, workCost, minuteCost } = this.props.config;
+      this.setState({ buyCost: giveCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost, workCost, minuteCost });
+    });
+    if (this.props.map.send.positionOriginating && this.props.map.receiver.positionDestination) {
+      this.props.dispatch({
+        type: 'home/getlenth',
+        payload: {
+          origins: this.props.map.send.positionOriginating,
+          destination: this.props.map.receiver.positionDestination,
+        },
+      }).then(() => {
+        const { distance } = this.props.results[0];
+        this.setState({ distance });
+      });
+    }
   }
   onRadioChange = (radio) => {
     this.setState({ radio });
   }
 
   onChangeTip = (val) => {
-    console.log(val);
-    this.setState({ tip: val });
+    this.setState({ extra: val });
+  }
+  onChangWeight = (val) => {
+    this.setState({ goodsWeight: val });
+  }
+  onChangeInsured = (val) => {
+    this.setState({ insuredType: val });
+  }
+
+  handleShowBasic = () => {
+    this.setState({ showInfo: !this.state.showInfo });
   }
   handleShowInsured = () => {
     this.setState({ showInsured: !this.state.showInsured });
   }
+  handleGoodsType = (val) => {
+    this.setState({ goodsType: val });
+  }
+  handleGoodsValue = (val) => {
+    this.setState({ goodsValue: val });
+  }
+  handleTime = (val) => {
+    this.setState({ time: moment(val).format('YYYY-MM-DD HH:MM:SS') });
+  }
+  handleSignFace = (val) => {
+    this.setState({ signFace: val ? 1 : 2 });
+  }
+  handleSend = (type) => {
+    this.props.dispatch({
+      type: 'map/type',
+      payload: type,
+    });
+  }
+  handlePayType = (val) => {
+    this.setState({ payType: val });
+  }
+  handleShowM = () => {
+    this.setState({ showM: !this.state.showM });
+  }
+
+  handleSubmit = () => {
+    if (!this.props.map.send.positionOriginating) {
+      alert('未选择办事地址');
+      return;
+    }
+    // if (!this.props.map.receiver.positionDestination) {
+    //   alert('未选择收件地址');
+    //   return;
+    // }
+    const { extra, payType, goodsType, goodsValue,
+      goodsWeight, insuredType, signFace, nightCost, buyCost, baseWeight, weightCost,
+      baseDistance, distanceCost, distance, workCost, minuteCost } = this.state;
+    const distanceAmount
+    = distanceCost * Math.round((distance / 1000) > baseDistance ? (distance / 1000) - baseDistance : 0);
+    let timeAmount;
+    if (this.state.time > 30) {
+      timeAmount
+      = ((workCost * 100) + ((this.state.time2 - 30) * minuteCost * 100));
+    } else {
+      timeAmount = (workCost * 100);
+    }
+    const payPrice = ((extra * 100) + (buyCost * 100) + (nightCost * 100)
+    // + ((weightCost * 100) * (goodsWeight > 5 ? goodsWeight - 5 : 0)) + (nightCost * 100)
+    + ((distanceCost * 100) * Math.round((distance / 1000) > baseDistance ? (distance / 1000) - baseDistance : 0))
+    + timeAmount
+    + (INSURED[insuredType].num * 100)) / 100;
+    const info = {
+      useId: this.props.userId,
+      orderType: this.state.orderType,
+      departureTime: this.state.time,
+      goodsType,
+      goodsValue,
+      goodsWeight,
+      payType,
+      insuredType,
+      signFace,
+      extra: extra * 100,
+      payPrice,
+      distanceAmount,
+      timeAmount,
+      nightShift: nightCost * 100,
+      city: '南京',
+      distance,
+      tip: this.props.form.getFieldsValue().account,
+      ...this.props.map.send,
+      ...this.props.map.receiver,
+    };
+    this.props.dispatch({
+      type: 'home/submit',
+      payload: {
+        order: { ...info },
+      },
+    });
+  }
+
   render() {
     const { getFieldProps, getFieldError } = this.props.form;
+    const { showInfo, showInsured, extra, payType, goodsType, goodsValue,
+      goodsWeight, insuredType, signFace, nightCost, buyCost, baseWeight, weightCost,
+      baseDistance, distanceCost, distance, workCost, minuteCost } = this.state;
+    let timeAmount;
+    if (this.state.time2 > 30) {
+      timeAmount
+      = ((workCost * 100) + ((this.state.time2 - 30) * minuteCost * 100));
+    } else {
+      timeAmount = (workCost * 100);
+    }
+    const payPrice = ((extra * 100) + (buyCost * 100) + (nightCost * 100)
+    // + ((weightCost * 100) * (goodsWeight > 5 ? goodsWeight - 5 : 0)) + (nightCost * 100)
+    + ((distanceCost * 100) * Math.round((distance / 1000) > baseDistance ? (distance / 1000) - baseDistance : 0))
+    + timeAmount
+    + (INSURED[insuredType].num * 100)) / 100;
+    const distanceAmount
+    = distanceCost * Math.round((distance / 1000) > baseDistance ? (distance / 1000) - baseDistance : 0);
     return (
       <div>
         <List>
@@ -48,48 +217,116 @@ export default class Todo extends React.PureComponent {
               </Flex.Item>
             </Flex>
           </Item>
-          {this.state.radio === 0 ? <Item arrow="horizontal" onClick={() => {}}>取资料地址</Item> : ''}
-          <Link to="/map"><Item arrow="horizontal" onClick={() => {}}>填写办事地址</Item></Link>
+          {
+            this.state.radio == 0 ?
+              (
+                <Item arrow="horizontal" onClick={() => this.handleSend(1)}>
+                  { this.props.map.send.positionOriginating ? this.props.map.send.sendAddress : '取资料地址' }
+                </Item>
+              )
+            : ''
+          }
+          <Item arrow="horizontal" onClick={() => this.handleSend(2)}>
+            { this.props.map.send.positionDestination ? this.props.map.receiver.receiverAddress : '办事地址' }
+          </Item>
           <Item align="top" multipleLine>
             <DatePicker
+              // value={this.state.time}
               okText="确定"
               dismissText="取消"
-              value={this.state.date}
-              onChange={date => console.log(date)}
+              format="YYYY-MM-DD HH:mm"
+              // mode="datatime"
+              onOk={this.handleTime}
             >
               <div className={styles.center}><Icon type="clock-circle-o" /> 立刻发单</div>
             </DatePicker>
           </Item>
           <InputItem
-            {...getFieldProps('account', {
-              // initialValue: 'little ant',
-              rules: [
-                { required: true, message: 'Please input account' },
-                { validator: this.validateAccount },
-              ],
-            })}
-            clear
-            error={!!getFieldError('account')}
-            onErrorClick={() => {
-              alert(getFieldError('account').join('、'));
+            value={this.state.time2}
+            onBlur={(val) => {
+              this.setState({ time2: val }, () => {
+                if (val < 30) {
+                  alert('不少于30分钟');
+                  this.setState({ time2: 30 });
+                }
+              });
             }}
+            onChange={
+              (val) => { this.setState({ time2: val }); }
+            }
             placeholder="输入时间不少于"
-            extra="min"
+            extra="分钟"
           >购买时长
           </InputItem>
+        </List>
+        <WhiteSpace size="xs" />
+        <List>
           <div className={styles['tag-container']}>
             <Flex wrap="wrap">
-              {['其他', '医院排队', '小时工', '万能排队', '照看宠物', '餐厅占座' ].map((i) => {
-                return <Tag className={styles.goodsTag} key={i} >{i}</Tag>;
+              {GOODS.map((i, index) => {
+                return (
+                  <Tag
+                    className={styles.goodsTag}
+                    selected={goodsType === index}
+                    key={i}
+                    onChange={() => this.handleGoodsType(index)}
+                  >{i}
+                  </Tag>
+                );
               })}
             </Flex>
           </div>
+          {/* <Item arrow="horizontal" extra={INSURED[insuredType].label} onClick={this.handleShowInsured}>保价</Item>
+          <Modal
+            popup
+            visible={showInsured}
+            onClose={this.handleShowInsured}
+            animationType="slide-up"
+          >
+            <List
+              renderHeader={
+                <Flex justify="between">
+                  <Flex.Item onClick={this.handleShowInsured}>取消</Flex.Item>
+                  <Flex.Item style={{ textAlign: 'center' }}>选择物品信息</Flex.Item >
+                  <Flex.Item style={{ textAlign: 'right' }} onClick={this.handleShowInsured}>确认</Flex.Item >
+                </Flex>
+              }
+            >
+              {INSURED.map(i => (
+                <RadioItem
+                  key={i.value}
+                  checked={insuredType === i.value}
+                  onChange={() => this.onChangeInsured(i.value)}
+                >
+                  {i.label}<List.Item.Brief>{i.extra}</List.Item.Brief>
+                </RadioItem>
+              ))}
+              <Item >
+                <AgreeItem style={{ textAlign: 'center' }} data-seed="logId" onChange={e => console.log('checkbox', e)}>
+                  我已阅读并同意<a onClick={(e) => { e.preventDefault(); alert('agree it'); }}>《物品保价协议》</a>
+                </AgreeItem>
+                <Brief style={{ textAlign: 'center' }}>赔付金额以物品实际价格凭证为准,<br /> 不超过所选保价方案赔付金额</Brief>
+              </Item>
+            </List>
+          </Modal>
+          <Item
+            extra={
+              <Switch
+                {...getFieldProps('Switch1', {
+                  initialValue: signFace === 1,
+                  valuePropName: 'checked',
+                })}
+                onClick={this.handleSignFace}
+              />
+            }
+          >
+              当面签收
+          </Item> */}
           <InputItem
             {...getFieldProps('account', {
               // initialValue: 'little ant',
               rules: [
-                { required: true, message: 'Please input account' },
-                { validator: this.validateAccount },
+                { required: true, message: '请输入备注信息' },
               ],
             })}
             clear
@@ -97,8 +334,8 @@ export default class Todo extends React.PureComponent {
             onErrorClick={() => {
               alert(getFieldError('account').join('、'));
             }}
-            placeholder="请输入您的备注信息"
-          >备注信息
+            placeholder="请输入您的描述"
+          >事宜描述
           </InputItem>
         </List>
         <WhiteSpace size="xs" />
@@ -109,15 +346,15 @@ export default class Todo extends React.PureComponent {
                 style={{ width: '100%', minWidth: '100px' }}
                 showNumber
                 min={0}
-                value={this.state.tip}
+                value={extra}
                 onChange={this.onChangeTip}
               />
             }
           >
             小费
           </Item>
-          <Item extra={`￥ ${1}`}>夜班津贴</Item>
-          <Item extra={`￥ ${1}`}>跑腿费</Item>
+          <Item extra={`￥ ${nightCost}`}>夜班津贴</Item>
+          <Item extra={`￥ ${buyCost}`}>跑腿费</Item>
         </List>
         <WhiteSpace size="xs" />
         <List>
@@ -125,20 +362,58 @@ export default class Todo extends React.PureComponent {
             支付方式
             <RadioItem
               style={{ paddingLeft: 0 }}
-              checked
-              onChange={() => { }}
+              checked={payType === 2}
+              onChange={() => { this.handlePayType(2); }}
             >
               <Icon type="wechat" style={{ color: '#1aad19' }} />&nbsp;微信支付
             </RadioItem>
+            {
+              isWeiXin() ?
+              '' :
+                (
+                  <RadioItem
+                    style={{ paddingLeft: 0 }}
+                    checked={payType === 1}
+                    onChange={() => { this.handlePayType(1); }}
+                  >
+                    <Icon type="alipay-circle" style={{ color: '#7EC0EE' }} />&nbsp;支付宝
+                  </RadioItem>
+                ) 
+            }
           </Item>
         </List>
         <WhiteSpace />
         <div className={styles.actionBarContainer}>
           <div className={styles.actionBarWrap}>
             <div className={styles.left}>
-              1234
+              共 { payPrice } 元
+              <div onClick={this.handleShowM} style={{ paddingLeft: '10px' }}><img src="/jiagemingxi.jpg" alt="" width="15" height="15" /> 价格明细</div>
+              <Modal
+                popup
+                visible={this.state.showM}
+                onClose={this.handleShowM}
+                animationType="slide-up"
+              >
+                <List
+                  renderHeader={
+                    <Flex justify="between">
+                      <Flex.Item onClick={this.handleShowM}>取消</Flex.Item>
+                      <Flex.Item style={{ textAlign: 'center' }}>价格明细</Flex.Item >
+                      <Flex.Item style={{ textAlign: 'right' }} onClick={this.handleShowM}>确认</Flex.Item >
+                    </Flex>
+                  }
+                >
+                  <Item extra={`${payPrice} 元`}>需要支付金额</Item>
+                  <Item extra={`${distanceAmount} 元`}>运费</Item>
+                  <Item extra={`${timeAmount / 100} 元`}>耗时费</Item>
+                  <Item extra={`${INSURED[insuredType].num} 元`}>保价</Item>
+                  <Item extra={`${extra} 元`}>小费</Item>
+                  <Item extra={`${nightCost} 元`}>夜班津贴</Item>
+                  <Item extra={`${buyCost} 元`}>服务费</Item>
+                </List>
+              </Modal>
             </div>
-            <div className={styles.trade}>
+            <div className={styles.trade} onClick={this.handleSubmit}>
               <a className={styles.buy} role="button">
                 发布
               </a>

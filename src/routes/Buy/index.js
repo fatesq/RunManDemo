@@ -36,11 +36,11 @@ export default class Buy extends React.PureComponent {
       showInsured: false,
       time: now, // 下单时间
       extra: 1, // 小费
-      orderType: 1, // 帮我送
+      orderType: 3, // 帮我送
       payType: 2, // 支付类型:微信
       goodsType: 0, // 商品类型
       goodsValue: 0, // 价格区间
-      goodsWeight: 1, // 重量
+      goodsWeight: 5, // 重量
       insuredType: 3, // 保价类型
       signFace: 1,
       nightCost: 0,
@@ -112,6 +112,9 @@ export default class Buy extends React.PureComponent {
   handlePayType = (val) => {
     this.setState({ payType: val });
   }
+  handleShowM = () => {
+    this.setState({ showM: !this.state.showM });
+  }
 
   handleSubmit = () => {
     if (!this.props.map.send.positionOriginating) {
@@ -126,17 +129,17 @@ export default class Buy extends React.PureComponent {
       goodsWeight, insuredType, signFace, nightCost, buyCost, baseWeight, weightCost,
       baseDistance, distanceCost, distance, timeAmount } = this.state;
     const distanceAmount
-    = (distanceCost * 100) * Math.round((distance / 1000) > 3 ? (distance / 1000) - 3 : 0);
-    const payPrice = ((extra * 100) + (buyCost * 100) + (baseWeight * 100) + (baseDistance * 100)
-    + ((weightCost * 100) * (goodsWeight > 5 ? goodsWeight - 5 : 0))
-    + distanceAmount
-    + (INSURED[insuredType].num * 100));
+    = distanceCost * Math.round((distance / 1000) > baseDistance ? (distance / 1000) - baseDistance : 0);
+    const payPrice = ((extra * 100) + (buyCost * 100)
+    + ((weightCost * 100) * (goodsWeight > baseWeight ? goodsWeight - baseWeight : 0)) + (nightCost * 100)
+    + ((distanceCost * 100) * Math.round((distance / 1000) > baseDistance ? (distance / 1000) - baseDistance : 0))
+    + (INSURED[insuredType].num * 100)) / 100;
     const info = {
       useId: this.props.userId,
       orderType: this.state.orderType,
       departureTime: this.state.time,
       goodsType,
-      goodsValue,
+      goodsValue: this.props.form.getFieldsValue().price,
       goodsWeight,
       payType,
       insuredType,
@@ -166,10 +169,12 @@ export default class Buy extends React.PureComponent {
       goodsWeight, insuredType, signFace, nightCost, buyCost, baseWeight, weightCost,
       baseDistance, distanceCost, distance } = this.state;
 
-    const payPrice = ((extra * 100) + (buyCost * 100) + (baseWeight * 100) + (baseDistance * 100)
-    + ((weightCost * 100) * (goodsWeight > 5 ? goodsWeight - 5 : 0))
-    + ((distanceCost * 100) * Math.round((distance / 1000) > 3 ? (distance / 1000) - 3 : 0)) 
+    const payPrice = ((extra * 100) + (buyCost * 100)
+    + ((weightCost * 100) * (goodsWeight > baseWeight ? goodsWeight - baseWeight : 0)) + (nightCost * 100)
+    + ((distanceCost * 100) * Math.round((distance / 1000) > baseDistance ? (distance / 1000) - baseDistance : 0))
     + (INSURED[insuredType].num * 100)) / 100;
+    const distanceAmount
+    = distanceCost * Math.round((distance / 1000) > baseDistance ? (distance / 1000) - baseDistance : 0);
     return (
       <div>
         <List>
@@ -226,7 +231,16 @@ export default class Buy extends React.PureComponent {
             placeholder="请输入您需要购买的商品"
             autoHeight
           />
-          <Item extra="按票据线下支付">物品价格</Item>
+          <InputItem
+            {...getFieldProps('price')}
+            clear
+            error={!!getFieldError('price')}
+            onErrorClick={() => {
+              alert(getFieldError('price').join('、'));
+            }}
+            placeholder="根据票据线下支付"
+          >物品价格
+          </InputItem>
           <Item
             extra={
               <Stepper
@@ -240,7 +254,7 @@ export default class Buy extends React.PureComponent {
           >
             物品重量
           </Item>
-          <Item arrow="horizontal" extra={INSURED[insuredType].label} onClick={this.handleShowInsured}>保价</Item>
+          {/* {<Item arrow="horizontal" extra={INSURED[insuredType].label} onClick={this.handleShowInsured}>保价</Item>
           <Modal
             popup
             visible={showInsured}
@@ -272,7 +286,7 @@ export default class Buy extends React.PureComponent {
                 <Brief style={{ textAlign: 'center' }}>赔付金额以物品实际价格凭证为准,<br /> 不超过所选保价方案赔付金额</Brief>
               </Item>
             </List>
-          </Modal>
+          </Modal>} */}
           <Item
             extra={
               <Switch
@@ -336,6 +350,31 @@ export default class Buy extends React.PureComponent {
           <div className={styles.actionBarWrap}>
             <div className={styles.left}>
               共 { payPrice } 元
+              <div onClick={this.handleShowM} style={{ paddingLeft: '10px' }}><img src="/jiagemingxi.jpg" alt="" width="15" height="15" /> 价格明细</div>
+              <Modal
+                popup
+                visible={this.state.showM}
+                onClose={this.handleShowM}
+                animationType="slide-up"
+              >
+                <List
+                  renderHeader={
+                    <Flex justify="between">
+                      <Flex.Item onClick={this.handleShowM}>取消</Flex.Item>
+                      <Flex.Item style={{ textAlign: 'center' }}>价格明细</Flex.Item >
+                      <Flex.Item style={{ textAlign: 'right' }} onClick={this.handleShowM}>确认</Flex.Item >
+                    </Flex>
+                  }
+                >
+                  <Item extra={`${payPrice} 元`}>需要支付金额</Item>
+                  <Item extra={`${distanceAmount} 元`}>跑腿费</Item>
+                  <Item extra={`${((weightCost * 100) * (goodsWeight > baseWeight ? goodsWeight - baseWeight : 0)) / 100} 元`}>重量</Item>
+                  <Item extra={`${INSURED[insuredType].num} 元`}>保价</Item>
+                  <Item extra={`${extra} 元`}>小费</Item>
+                  <Item extra={`${nightCost} 元`}>夜班津贴</Item>
+                  <Item extra={`${buyCost} 元`}>基础服务费</Item>
+                </List>
+              </Modal>
             </div>
             <div className={styles.trade} onClick={this.handleSubmit}>
               <a className={styles.buy} role="button">

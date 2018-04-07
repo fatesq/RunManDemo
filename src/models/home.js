@@ -21,7 +21,7 @@ export default {
         yield put(routerRedux.push('/orderInfo'));
       } else {
         alert(response.msg);
-      }    
+      }
     },
     *getlenth({ payload }, { call, put }) {
       payload.key = '19da76076593935ade0d45601a59fe01';
