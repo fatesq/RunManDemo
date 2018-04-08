@@ -1,6 +1,12 @@
 import { stringify } from 'qs';
 import request from '../utils/request';
 
+export async function getIP() {
+  return request('http://restapi.amap.com/v3/ip?key=19da76076593935ade0d45601a59fe01', {
+    method: 'get',
+  });
+}
+
 export async function getWeixinConfig() {
   return request('/api/secret/encode', {
     method: 'get',

@@ -367,12 +367,14 @@ export default class Buy extends React.PureComponent {
                   }
                 >
                   <Item extra={`${payPrice} 元`}>需要支付金额</Item>
-                  <Item extra={`${distanceAmount} 元`}>跑腿费</Item>
+                  <Item extra={`${distanceAmount + buyCost} 元`}>跑腿费</Item>
                   <Item extra={`${((weightCost * 100) * (goodsWeight > baseWeight ? goodsWeight - baseWeight : 0)) / 100} 元`}>重量</Item>
                   <Item extra={`${INSURED[insuredType].num} 元`}>保价</Item>
                   <Item extra={`${extra} 元`}>小费</Item>
                   <Item extra={`${nightCost} 元`}>夜班津贴</Item>
-                  <Item extra={`${buyCost} 元`}>基础服务费</Item>
+                  {
+                    /* <Item extra={`${buyCost} 元`}>基础服务费</Item> */
+                  }
                 </List>
               </Modal>
             </div>

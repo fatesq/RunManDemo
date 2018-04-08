@@ -4,6 +4,7 @@ import { Icon } from 'antd';
 import { Carousel, Drawer, List } from 'antd-mobile';
 import { Route, Redirect, Switch, NavLink } from 'dva/router';
 import { getRoutes, isWeiXin } from '../utils/utils';
+import { getIP } from '../services/api';
 import styles from './MobileLayout.less';
 
 
@@ -24,6 +25,9 @@ class MobileLayout extends React.PureComponent {
     } else {
       this.props.dispatch({ type: 'global/weixinConfig' });
     }
+    getIP().then((res) => {
+      this.setState({ city: res.city });
+    });
   }
 
   onOpenChange = () => {
@@ -99,7 +103,7 @@ class MobileLayout extends React.PureComponent {
                   <NavLink to="/home/todo" activeClassName={styles.actives} ><li data-index="3" data-x="225">帮办事</li></NavLink>
                 </ul>
                 <div className={styles['right-btns']}>
-                  <Icon type="message" className={styles.icon} />
+                  {this.state.city}
                 </div>
               </div>
             </div>

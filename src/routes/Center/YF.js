@@ -11,7 +11,7 @@ export default class YF extends React.PureComponent {
           onLeftClick={() => { window.location.hash = '/'; }}
         >运费说明
         </NavBar>
-        <img style={{ width: '100%', maxWidth: '750px', height: 'auto', margin: '0 auto' }} src="/qd_s1.jpg" alt="" />
+        <img style={{ width: '100%', maxWidth: '750px', height: 'auto', margin: '0 auto' }} src="/qd_s1.png" alt="" />
       </div>
     );
   }
