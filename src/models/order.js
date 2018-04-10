@@ -2,6 +2,10 @@ import { routerRedux } from 'dva/router';
 import { wxPay, getOrder, process, cancelOrder, signOrder, aliPay } from '../services/api';
 import { isWeiXin } from '../utils/utils';
 
+const u = navigator.userAgent;
+const app = navigator.appVersion;
+const isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; // g
+const isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); // ios终端
 export default {
   namespace: 'order',
 
@@ -57,11 +61,25 @@ export default {
             },
           });
         } else {
-          iOSNative.mobilePay(payload.orderId);
+          if (isAndroid) {
+            // 这个是安卓操作系统
+            window.android.mobilePay(payload.orderId)
+          }
+          if (isIOS) {
+            // 这个是ios操作系统
+            iOSNative.mobilePay(payload.orderId);
+          }
         }
       } else {
         const response = yield call(aliPay, { orderId: payload.orderId });
-        Native.AliPay(response);
+        if (isAndroid) {
+          // 这个是安卓操作系统
+          window.android.AliPay(response);
+        }
+        if (isIOS) {
+          // 这个是ios操作系统
+          Native.AliPay(response);
+        }
       }
     },
     *cancel({ payload }, { call, put }) {
