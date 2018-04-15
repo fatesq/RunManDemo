@@ -108,9 +108,9 @@ class MobileLayout extends React.PureComponent {
               </div>
             </div>
           </div>
-          <NoticeBar marqueeProps={{ loop: true, style: { padding: '0 7.5px' } }}>
+          {/* <NoticeBar marqueeProps={{ loop: true, style: { padding: '0 7.5px' } }}>
             公告: 欢迎使用跑男&#39;欢迎使用跑男.
-          </NoticeBar>
+          </NoticeBar> */}
           <Carousel
             autoplay={false}
             infinite

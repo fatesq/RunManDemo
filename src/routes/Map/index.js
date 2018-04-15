@@ -11,7 +11,7 @@ export default class MapC extends React.PureComponent {
   componentDidMount() {
     const iframe = document.getElementById('test').contentWindow;
     document.getElementById('test').onload = () => {
-      iframe.postMessage('hello', 'https://m.amap.com/picker/');
+      iframe.postMessage('', 'https://m.amap.com/picker/');
     };
     window.addEventListener('message', (e) => {
       console.log(e);
@@ -26,7 +26,7 @@ export default class MapC extends React.PureComponent {
       <div style={{ width: '100%', height: '100%' }}>
         <iframe
           id="test"
-          src="https://m.amap.com/picker/?key=608d75903d29ad471362f8c58c550daf"
+          src="https://mo.amap.com/picker/?key=608d75903d29ad471362f8c58c550daf"
           width="100%"
           height="100%"
           frameBorder="0"
