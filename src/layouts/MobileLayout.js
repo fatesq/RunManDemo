@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Icon } from 'antd';
-import { Carousel, Drawer, List } from 'antd-mobile';
+import { Carousel, Drawer, List, NoticeBar } from 'antd-mobile';
 import { Route, Redirect, Switch, NavLink } from 'dva/router';
 import { getRoutes, isWeiXin } from '../utils/utils';
 import { getIP } from '../services/api';
@@ -108,6 +108,9 @@ class MobileLayout extends React.PureComponent {
               </div>
             </div>
           </div>
+          <NoticeBar marqueeProps={{ loop: true, style: { padding: '0 7.5px' } }}>
+            公告: 欢迎使用跑男&#39;欢迎使用跑男.
+          </NoticeBar>
           <Carousel
             autoplay={false}
             infinite

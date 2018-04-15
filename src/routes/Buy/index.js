@@ -104,6 +104,7 @@ export default class Buy extends React.PureComponent {
     this.setState({ signFace: val ? 1 : 2 });
   }
   handleSend = (type) => {
+    localStorage.page = 3;
     this.props.dispatch({
       type: 'map/type',
       payload: type,

@@ -113,6 +113,7 @@ export default class Todo extends React.PureComponent {
     this.setState({ signFace: val ? 1 : 2 });
   }
   handleSend = (type) => {
+    localStorage.page = 4;
     this.props.dispatch({
       type: 'map/type',
       payload: type,

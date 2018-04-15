@@ -105,6 +105,7 @@ export default class Get extends React.PureComponent {
     this.setState({ signFace: val ? 1 : 2 });
   }
   handleSend = (type) => {
+    localStorage.page = 2;
     this.props.dispatch({
       type: 'map/type',
       payload: type,

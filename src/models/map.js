@@ -71,7 +71,19 @@ export default {
           payload: send,
         });
       }
-      window.location.hash = '/';
+      if (localStorage.page == 1) {
+        window.location.hash = '/home/deliver';
+      }
+      if (localStorage.page == 2) {
+        window.location.hash = '/home/get';
+      }
+      if (localStorage.page == 3) {
+        window.location.hash = '/home/buy';
+      }
+      if (localStorage.page == 4) {
+        window.location.hash = '/home/todo';
+      }
+      
     },
     *type({ payload }, { put }) {
       yield put({
