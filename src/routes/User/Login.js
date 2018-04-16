@@ -52,7 +52,7 @@ export default class LoginPage extends Component {
     const info = {
       checkCode: values.captcha,
       phone: values.mobile,
-      wxAccount: this.props.login.openid,
+      openId: this.props.login.openid,
     };
     if (!err) {
       this.props.dispatch({

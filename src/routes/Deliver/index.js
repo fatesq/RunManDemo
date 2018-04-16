@@ -56,15 +56,17 @@ export default class Deliver extends React.PureComponent {
     };
   }
   componentDidMount() {
-    this.props.dispatch({
-      type: 'home/config',
-      payload: {
-        city: '南京',
-      },
-    }).then(() => {
-      const { giveCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost } = this.props.config;
-      this.setState({ buyCost: giveCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost });
-    });
+    if (localStorage.userid) {
+      this.props.dispatch({
+        type: 'home/config',
+        payload: {
+          city: '南京',
+        },
+      }).then(() => {
+        const { giveCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost } = this.props.config;
+        this.setState({ buyCost: giveCost, nightCost, baseWeight, weightCost, baseDistance, distanceCost });
+      });
+    }
     if (this.props.map.send.positionOriginating && this.props.map.receiver.positionDestination) {
       this.props.dispatch({
         type: 'home/getlenth',

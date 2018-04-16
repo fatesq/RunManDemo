@@ -8,8 +8,8 @@ export default {
   namespace: 'login',
 
   state: {
-    openid: 'oHqVowtAVRnunHXLeEcjIiNdKKgY', // undefined,
-    id: '10006-800001623dbbe2854cc040c21c82c751', // undefined,
+    openid: undefined,
+    id: undefined,
   },
 
   effects: {
@@ -20,6 +20,9 @@ export default {
           type: 'changeOpenId',
           payload: response.obj,
         });
+        // localStorage.openid = response.obj.openid;
+        // localStorage.userid = response.obj.id;
+        localStorage.phone = response.obj.phone;
       }
       // Login successfully
       if (response.status === '00' && response.obj.phone) {
@@ -41,6 +44,9 @@ export default {
           type: 'changeOpenId',
           payload: response.obj,
         });
+        // localStorage.openid = response.obj.openid;
+        // localStorage.userid = response.obj.id;
+        localStorage.phone = response.obj.phone;
       }
       // Login successfully
       if (response.status === '00' && response.obj.phone) {
@@ -64,7 +70,7 @@ export default {
         reloadAuthorized();
         window.location.hash = '/home/deliver';
       } else {
-        Toast.fail('绑定失败', 1);
+        Toast.fail(response.msg, 1);
       }
     },
   },
@@ -74,7 +80,7 @@ export default {
       setAuthority('user');
       return {
         ...state,
-        openid: payload.wxAccount,
+        openid: payload.openId,
         id: payload.id,
       };
     },

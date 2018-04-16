@@ -11,6 +11,7 @@ import styles from './MobileLayout.less';
 @connect(({ global, login, loading }) => ({
   global,
   openid: login.openid,
+  login,
   submitting: loading.effects['login/login'],
 }))
 class MobileLayout extends React.PureComponent {
@@ -20,6 +21,7 @@ class MobileLayout extends React.PureComponent {
     imgHeight: 176,
   }
   componentWillMount() {
+    console.log(this.props)
     if (!this.props.openid) {
       window.location.hash = isWeiXin() ? '/user/login' : '/user/plogin';
     } else {
@@ -40,7 +42,7 @@ class MobileLayout extends React.PureComponent {
         <List.Item
           thumb="https://zos.alipayobjects.com/rmsportal/eOZidTabPoEbPeU.png"
           multipleLine
-        >15850777777
+        >{localStorage.phone}
         </List.Item>
         <List.Item>
           <NavLink to="/coupon">优惠券与管理</NavLink>
