@@ -8,8 +8,8 @@ export default {
   namespace: 'login',
 
   state: {
-    openid: undefined,
-    id: undefined,
+    openid: localStorage.openid,
+    id: localStorage.userid,
   },
 
   effects: {
@@ -44,8 +44,8 @@ export default {
           type: 'changeOpenId',
           payload: response.obj,
         });
-        // localStorage.openid = response.obj.openid;
-        // localStorage.userid = response.obj.id;
+        localStorage.openid = response.obj.openid;
+        localStorage.userid = response.obj.id;
         localStorage.phone = response.obj.phone;
       }
       // Login successfully
@@ -54,12 +54,15 @@ export default {
         window.location.hash = '/home/deliver';
       }
       if (response.status !== '00') {
-        Toast.fail('获取信息失败', 2);
-        window.wx.closeWindow();
+        Toast.fail(response.msg, 2);
       }
-      if (response.status === '00' && !response.obj.phone) {
-        Toast.info('请先绑定手机号', 1);
-      }
+      // if (response.status !== '00') {
+      //   Toast.fail('获取信息失败', 2);
+      //   window.wx.closeWindow();
+      // }
+      // if (response.status === '00' && !response.obj.phone) {
+      //   Toast.info('请先绑定手机号', 1);
+      // }
     },
     *message({ payload }, { call }) {
       yield call(sendMessage, payload);

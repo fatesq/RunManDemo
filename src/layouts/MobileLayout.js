@@ -21,8 +21,8 @@ class MobileLayout extends React.PureComponent {
     imgHeight: 176,
   }
   componentWillMount() {
-    console.log(this.props)
-    if (!this.props.openid) {
+    // console.log(this.props)
+    if (!localStorage.phone) {
       window.location.hash = isWeiXin() ? '/user/login' : '/user/plogin';
     } else {
       this.props.dispatch({ type: 'global/weixinConfig' });
@@ -58,6 +58,9 @@ class MobileLayout extends React.PureComponent {
         </List.Item>
         <List.Item>
           <NavLink to="/yj">意见反馈</NavLink>
+        </List.Item>
+        <List.Item>
+          <NavLink to="/user/login">退出登陆</NavLink>
         </List.Item>
         <div style={{ position: 'fixed', bottom: 0, display: 'flex', width: '100%' }}>
           <div style={{ flex: 1, textAlign: 'center'}}>
