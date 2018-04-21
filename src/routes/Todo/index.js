@@ -405,7 +405,7 @@ export default class Todo extends React.PureComponent {
                   }
                 >
                   <Item extra={`${payPrice} 元`}>需要支付金额</Item>
-                  <Item extra={`${Number(distanceAmount) + Number(buyCost)} 元`}>运费</Item>
+                  <Item extra={`${Number(distanceAmount) + Number(buyCost)} 元`}>跑腿费</Item>
                   <Item extra={`${timeAmount / 100} 元`}>耗时费</Item>
                   <Item extra={`${INSURED[insuredType].num} 元`}>保价</Item>
                   <Item extra={`${extra} 元`}>小费</Item>

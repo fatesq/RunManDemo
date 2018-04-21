@@ -17,13 +17,13 @@ export default class LoginPage extends Component {
     pageType: true,
   }
   componentWillMount() {
-    console.log(window.localStorage.code);
-    this.props.dispatch({
-      type: 'login/login',
-      payload: {
-        wxAccount: window.localStorage.code,
-      },
-    });
+    // console.log(window.localStorage.code);
+    // this.props.dispatch({
+    //   type: 'login/login',
+    //   payload: {
+    //     wxAccount: window.localStorage.code,
+    //   },
+    // });
   }
 
   onTabChange = (type) => {
@@ -52,11 +52,12 @@ export default class LoginPage extends Component {
     const info = {
       checkCode: values.captcha,
       phone: values.mobile,
-      wxAccount: this.props.login.openid,
+      // openId: this.props.login.openid,
+      code: window.localStorage.code,
     };
     if (!err) {
       this.props.dispatch({
-        type: 'login/bind',
+        type: 'login/login',
         payload: {
           ...info,
         },
@@ -88,7 +89,7 @@ export default class LoginPage extends Component {
           }
           <Mobile name="mobile" />
           <Captcha name="captcha" onGetCaptcha={this.onGetCaptcha} />
-          <Submit loading={submitting}>绑定手机号</Submit>
+          <Submit loading={submitting}>点击登陆</Submit>
           {/* <div style={{ textAlign: 'center' }}>
             <Checkbox checked={this.state.autoLogin} onChange={this.changeAutoLogin}>
               <a>同意服务条款</a>

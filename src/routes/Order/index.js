@@ -26,16 +26,19 @@ export default class Get extends React.PureComponent {
     this.getList();
   }
   getList = (data, index) => {
+    let info = {
+      userId: this.props.userId,
+      bean: 'order',
+      method: 'pageOrder',
+      page: 1,
+      rows: 999,
+    };
+    if (index) {
+      info.orderStatus = index;
+    }
     this.props.dispatch({
       type: 'order/list',
-      payload: {
-        userId: this.props.userId,
-        bean: 'order',
-        method: 'pageOrder',
-        page: 1,
-        rows: 999,
-        orderStatus: index ? index : '',
-      },
+      payload: info,
     });
   }
   toInfo = (orderId) => {

@@ -41,6 +41,8 @@ export default class OrderInfo extends React.PureComponent {
         userId: this.props.userId,
         orderId: this.props.obj.orderId,
       },
+    }).then(() => {
+      window.location.hash = '/';
     });
   }
   signOrder = (orderId) => {
@@ -82,7 +84,7 @@ export default class OrderInfo extends React.PureComponent {
                 <InputItem value={`￥${obj.extra / 100}`} editable={false}>小费:</InputItem>
                 <InputItem value={`￥${obj.nightShift / 100}`} editable={false}>夜班费:</InputItem>
                 <WhiteSpace />
-                {obj.payStatus != 1 ? <Button type="primary" onClick={this.handlePay}>确定支付</Button> : ''}
+                {obj.payStatus != 1 && obj.orderStatus == 1? <Button type="primary" onClick={this.handlePay}>确定支付</Button> : ''}
                 <WhiteSpace />
                 {obj.orderStatus == 1 ? <Button type="warning" onClick={this.cancelOrder}>取消订单</Button> : ''}
                 {obj.orderStatus == 3 ? <Button type="primary" onClick={this.signOrder}>确认收货</Button> : ''}
