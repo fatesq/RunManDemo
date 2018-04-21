@@ -26,7 +26,7 @@ export default class MapC extends React.PureComponent {
       <div style={{ width: '100%', height: '100%' }}>
         <iframe
           id="test"
-          src="https://mo.amap.com/picker/?key=608d75903d29ad471362f8c58c550daf"
+          src="https://m.amap.com/picker/?key=608d75903d29ad471362f8c58c550daf"
           width="100%"
           height="100%"
           frameBorder="0"
