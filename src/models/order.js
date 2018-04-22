@@ -63,11 +63,11 @@ export default {
         } else {
           if (isAndroid) {
             // 这个是安卓操作系统
-            window.android.WeChatPay(response)
+            window.android.WeChatPay(response);
           }
           if (isIOS) {
             // 这个是ios操作系统
-            iOSNative.WeChatPay(response);
+            Native.WeChatPay(response);
           }
         }
       } else {

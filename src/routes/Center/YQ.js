@@ -6,6 +6,10 @@ const tabs = [
   { title: '我的邀请' },
   { title: '奖励明细' },
 ];
+const u = navigator.userAgent;
+const app = navigator.appVersion;
+const isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; // g
+const isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); // ios终端
 export default class YQ extends React.PureComponent {
   state = {
     list1: [],
@@ -31,6 +35,20 @@ export default class YQ extends React.PureComponent {
       this.setState({ list2: res.rows });
     });
   }
+  Share = (type) => {
+    const info = {
+      titile: '巴比跑腿',
+      URL: 'www.baidu.com',
+      type,
+      content: '详细内容描述',
+    }
+    if (isAndroid) {
+      window.android.WeChatShare(info)
+    }
+    if (isIOS) {
+      Native.WeChatShare(info)
+    }  
+  }
   render() {
     return (
       <div style={{ width: '100%', textAlign: 'center' }} >
@@ -45,10 +63,10 @@ export default class YQ extends React.PureComponent {
             <img style={{ width: '100%', maxWidth: '750px', height: 'auto', margin: '0 auto' }} src="/one.jpg" alt="" />
             <div style={{ display: 'flex', backgroundColor: '#FFF', margin: '20px', padding: '10px' }}>
               <div style={{ flex: 1 }}>
-                <img src="/i1.png" style={{ width: '50px', height: '50px' }} alt="" />
+                <img src="/i1.png" style={{ width: '50px', height: '50px' }} alt="" onClick={this.Share(1)} />
               </div>
               <div style={{ flex: 1 }}>
-                <img src="/i2.jpg" style={{ width: '50px', height: '50px' }} alt="" />
+                <img src="/i2.jpg" style={{ width: '50px', height: '50px' }} alt="" onClick={this.Share(2)} />
               </div>
               <div style={{ flex: 1 }}>
                 <img src="/i3.png" style={{ width: '50px', height: '50px' }} alt="" />

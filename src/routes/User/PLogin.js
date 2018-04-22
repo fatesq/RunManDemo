@@ -18,6 +18,8 @@ export default class PLoginPage extends Component {
     pageType: true,
   }
 
+  componentDidMount() {
+  }
   onTabChange = (type) => {
     this.setState({ type });
   }

@@ -21,7 +21,6 @@ class MobileLayout extends React.PureComponent {
     imgHeight: 176,
   }
   componentWillMount() {
-    // console.log(this.props)
     if (!localStorage.phone) {
       window.location.hash = isWeiXin() ? '/user/login' : '/user/plogin';
     } else {

@@ -15,13 +15,13 @@ export default {
   effects: {
     *plogin({ payload }, { call, put }) {
       const response = yield call(plogin, payload);
-      if (response.obj && response.obj.wxAccount) {
+      if (response.obj) {
         yield put({
           type: 'changeOpenId',
           payload: response.obj,
         });
-        // localStorage.openid = response.obj.openid;
-        // localStorage.userid = response.obj.id;
+        localStorage.openid = response.obj.openid;
+        localStorage.userid = response.obj.id;
         localStorage.phone = response.obj.phone;
       }
       // Login successfully
@@ -39,7 +39,7 @@ export default {
     },
     *login({ payload }, { call, put }) {
       const response = yield call(wxlogin, payload);
-      if (response.obj && response.obj.wxAccount) {
+      if (response.obj) {
         yield put({
           type: 'changeOpenId',
           payload: response.obj,
