@@ -37,16 +37,16 @@ export default class YQ extends React.PureComponent {
   }
   Share = (type) => {
     const info = {
-      titile: '巴比跑腿',
-      URL: 'www.baidu.com',
+      title: '巴比跑腿',
+      URL: `http://39.107.112.14:6479/getshare?phone=${localStorage.phone}`,
       type,
-      content: '详细内容描述',
-    }
+      content: '巴比跑腿',
+    };
     if (isAndroid) {
-      window.android.WeChatShare(info)
+      window.android.WeChatShare(info);
     }
     if (isIOS) {
-      Native.WeChatShare(info)
+      Native.WeChatShare(info);
     }  
   }
   render() {
