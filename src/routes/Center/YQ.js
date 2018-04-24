@@ -43,7 +43,7 @@ export default class YQ extends React.PureComponent {
       content: '巴比跑腿',
     };
     if (isAndroid) {
-      window.android.WeChatShare(info);
+      window.android.WeChatShare(JSON.stringify(info));
     }
     if (isIOS) {
       Native.WeChatShare(info);
