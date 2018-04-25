@@ -27,21 +27,20 @@ export default {
   effects: {
     *send({ payload }, { put, select }) {
       const type = yield select(state => state.map.type);
-      console.log(type);
       if (type === 1) {
         const send = yield select(state => state.map.send);
-        send.sendStreet = payload.address;
-        send.positionOriginating = payload.location;
-        send.sendAddress = payload.name;
+        send.sendStreet = payload.poiaddress;
+        send.positionOriginating = `${payload.latlng.lng},${payload.latlng.lat}`;
+        send.sendAddress = payload.poiname;
         yield put({
           type: 'saveSend',
           payload: send,
         });
       } else {
         const send = yield select(state => state.map.send);
-        send.receiverStreet = payload.address;
-        send.positionDestination = payload.location;
-        send.receiverAddress = payload.name;
+        send.receiverStreet = payload.poiaddress;
+        send.positionDestination = `${payload.latlng.lng},${payload.latlng.lat}`;
+        send.receiverAddress = payload.poiname;
         yield put({
           type: 'saveReceiver',
           payload: send,
