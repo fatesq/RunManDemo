@@ -35,7 +35,7 @@ export default class Buy extends React.PureComponent {
       showInfo: false,
       showInsured: false,
       time: now, // 下单时间
-      extra: 1, // 小费
+      extra: 0, // 小费
       orderType: 3, // 帮我送
       payType: 2, // 支付类型:微信
       goodsType: 0, // 商品类型
@@ -50,6 +50,7 @@ export default class Buy extends React.PureComponent {
       baseDistance: 0,
       distanceCost: 0,
       timeAmount: 0,
+      showTime: '立即发单',
     };
   }
   componentDidMount() {
@@ -99,6 +100,7 @@ export default class Buy extends React.PureComponent {
   }
   handleTime = (val) => {
     this.setState({ time: val });
+    this.setState({ showTime: moment(val).format('YYYY-MM-DD HH:MM:SS') });
   }
   handleSignFace = (val) => {
     this.setState({ signFace: val ? 1 : 2 });
@@ -168,7 +170,7 @@ export default class Buy extends React.PureComponent {
     const { getFieldProps, getFieldError } = this.props.form;
     const { showInsured, extra, payType, goodsType, goodsValue,
       goodsWeight, insuredType, signFace, nightCost, buyCost, baseWeight, weightCost,
-      baseDistance, distanceCost, distance } = this.state;
+      baseDistance, distanceCost, distance, showTime } = this.state;
 
     const payPrice = ((extra * 100) + (buyCost * 100)
     + ((weightCost * 100) * (goodsWeight > baseWeight ? goodsWeight - baseWeight : 0)) + (nightCost * 100)
@@ -195,7 +197,7 @@ export default class Buy extends React.PureComponent {
               // mode="datatime"
               onOk={this.handleTime}
             >
-              <div className={styles.center}><Icon type="clock-circle-o" /> 立刻发单</div>
+              <div className={styles.center}><Icon type="clock-circle-o" /> {showTime}</div>
             </DatePicker>
           </Item>
         </List>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Flex, Radio, List, InputItem, Button } from 'antd-mobile';
+import { Flex, Radio, List, InputItem, Button, NavBar, Icon } from 'antd-mobile';
 import { createForm } from 'rc-form';
 import { process, invoice } from '../../services/api';
 
@@ -63,6 +63,12 @@ export default class Bills extends React.PureComponent {
     const { getFieldProps, getFieldError } = this.props.form;
     return (
       <div>
+        <NavBar
+          mode="light"
+          icon={<Icon type="left" />}
+          onLeftClick={() => { window.location.hash = '/'; }}
+        >发票
+        </NavBar>
         <List renderHeader={() => ''} className="my-list" style={{ display: this.state.showInvocie ? 'none' : '' }}>
           {
             this.state.data.map((item) => {

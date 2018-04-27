@@ -38,7 +38,7 @@ export default class YQ extends React.PureComponent {
   Share = (type) => {
     const info = {
       title: '巴比跑腿',
-      URL: `http://39.107.112.14:6479/getshare?phone=${localStorage.phone}`,
+      URL: `http://rider.shjcqg.com/getshare?phone=${localStorage.phone}`,
       type,
       content: '巴比跑腿',
     };
@@ -50,7 +50,7 @@ export default class YQ extends React.PureComponent {
     } else {
       window.wx.onMenuShareTimeline({
         title: '巴比跑腿', // 分享标题
-        link: `http://39.107.112.14:6479/getshare?phone=${localStorage.phone}`, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+        link: `http://rider.shjcqg.com/getshare?phone=${localStorage.phone}`, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
         imgUrl: '', // 分享图标
         success: function () {
         // 用户确认分享后执行的回调函数

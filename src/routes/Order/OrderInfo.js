@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Button, List, TextareaItem, WhiteSpace, InputItem } from 'antd-mobile';
+import { Button, List, TextareaItem, WhiteSpace, InputItem, NavBar, Icon } from 'antd-mobile';
 import { isWeiXin } from '../../utils/utils';
 
 const { Item } = List;
@@ -59,6 +59,12 @@ export default class OrderInfo extends React.PureComponent {
     console.log(this.props);
     return (
       <div>
+        <NavBar
+          mode="light"
+          icon={<Icon type="left" />}
+          onLeftClick={() => { window.location.hash = '/'; }}
+        >订单
+        </NavBar>
         {
           obj !== ''
           ?

@@ -37,7 +37,7 @@ export default class Todo extends React.PureComponent {
       showInfo: false,
       showInsured: false,
       time: now, // 下单时间
-      extra: 1, // 小费
+      extra: 0, // 小费
       orderType: 4, // 帮我送
       payType: 2, // 支付类型:微信
       goodsType: 0, // 商品类型
@@ -54,7 +54,8 @@ export default class Todo extends React.PureComponent {
       timeAmount: 0,
       workCost: 0,
       minuteCost: 0,
-      time2: 30
+      time2: 30,
+      showTime: '立即发单',
     };
   }
   componentDidMount() {
@@ -108,6 +109,7 @@ export default class Todo extends React.PureComponent {
   }
   handleTime = (val) => {
     this.setState({ time: moment(val).format('YYYY-MM-DD HH:MM:SS') });
+    this.setState({ showTime: moment(val).format('YYYY-MM-DD HH:MM:SS') });
   }
   handleSignFace = (val) => {
     this.setState({ signFace: val ? 1 : 2 });
@@ -185,7 +187,7 @@ export default class Todo extends React.PureComponent {
     const { getFieldProps, getFieldError } = this.props.form;
     const { showInfo, showInsured, extra, payType, goodsType, goodsValue,
       goodsWeight, insuredType, signFace, nightCost, buyCost, baseWeight, weightCost,
-      baseDistance, distanceCost, distance, workCost, minuteCost } = this.state;
+      baseDistance, distanceCost, distance, workCost, minuteCost, showTime } = this.state;
     let timeAmount;
     if (this.state.time2 > 30) {
       timeAmount
@@ -239,7 +241,7 @@ export default class Todo extends React.PureComponent {
               // mode="datatime"
               onOk={this.handleTime}
             >
-              <div className={styles.center}><Icon type="clock-circle-o" /> 立刻发单</div>
+              <div className={styles.center}><Icon type="clock-circle-o" />  { showTime }</div>
             </DatePicker>
           </Item>
           <InputItem

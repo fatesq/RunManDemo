@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Tabs, Card, List, Button, Modal, Flex, TextareaItem } from 'antd-mobile';
+import { Tabs, Card, List, Button, Modal, Flex, TextareaItem, NavBar, Icon } from 'antd-mobile';
 import { Rate } from 'antd';
 import { comment } from '../../services/api'
 
@@ -93,78 +93,86 @@ export default class Get extends React.PureComponent {
   render() {
     console.log(this.props.order.list);
     return (
-      <Tabs
-        tabs={status}
-        onChange={(tab, index) => this.getList(tab, index)}
-      >
-        <div style={{ height: '100%', backgroundColor: '#fff' }}>
-          { this.props.order.list.map((item) => {
-            return (
-              <Card>
-                <Card.Body>
-                  <Item extra={`${status[item.orderStatus].title}`} align="top" multipleLine>
-                    单号：<span style={{ fontSize: '12px' }}>{item.orderId}</span>
-                    <Brief>
-                      <div>地址：{item.receiverAddress}</div>
-                      <div>收件人：{item.receiverName}</div>
-                      <div>电话：{item.receiverPhone}</div>
-                    </Brief>
-                  </Item>
-                  <Item extra={`合计 ${item.payPrice / 100}`}>{item.createTime}</Item>
-                </Card.Body>
-                <Modal
-                  popup
-                  visible={this.state.show}
-                  onClose={() => { this.setState({ show: false }); }}
-                  animationType="slide-up"
-                >
-                  <List
-                    renderHeader={
-                      <Flex justify="between">
-                        <Flex.Item onClick={() => { this.setState({ show: false }); }}>取消</Flex.Item>
-                        <Flex.Item style={{ textAlign: 'center' }}>评价跑男</Flex.Item >
-                        <Flex.Item style={{ textAlign: 'right' }} onClick={this.handleComment}>确认</Flex.Item >
-                      </Flex>
-                    }
+      <div>
+        <NavBar
+          mode="light"
+          icon={<Icon type="left" />}
+          onLeftClick={() => { window.location.hash = '/'; }}
+        >订单
+        </NavBar>
+        <Tabs
+          tabs={status}
+          onChange={(tab, index) => this.getList(tab, index)}
+        >
+          <div style={{ height: '100%', backgroundColor: '#fff' }}>
+            { this.props.order.list.map((item) => {
+              return (
+                <Card>
+                  <Card.Body>
+                    <Item extra={`${status[item.orderStatus].title}`} align="top" multipleLine>
+                      单号：<span style={{ fontSize: '12px' }}>{item.orderId}</span>
+                      <Brief>
+                        <div>地址：{item.receiverAddress}</div>
+                        <div>收件人：{item.receiverName}</div>
+                        <div>电话：{item.receiverPhone}</div>
+                      </Brief>
+                    </Item>
+                    <Item extra={`合计 ${item.payPrice / 100}`}>{item.createTime}</Item>
+                  </Card.Body>
+                  <Modal
+                    popup
+                    visible={this.state.show}
+                    onClose={() => { this.setState({ show: false }); }}
+                    animationType="slide-up"
                   >
-                    <Rate value={this.state.val} onChange={(val) => { this.setState({ val }); }} />
-                    <TextareaItem
-                      title="其他想说的:"
-                      clear
-                      placeholder="点击输入其他的评价描述"
-                      autoHeight
-                      rows="3"
-                      onChange={(txt) => { this.setState({ txt }); }}
-                    />
-                  </List>
-                </Modal>
-                <Card.Footer
-                  extra={
-                    <div>
-                      <Button type="ghost" inline onClick={() => { this.toInfo(item.orderId); }} size="small" style={{ marginRight: '4px' }}>查看订单</Button>
-                      {
-                        item.orderStatus == 1 ?
-                          <Button type="ghost" inline onClick={() => { this.cancelOrder(item.orderId); }} size="small" style={{ marginRight: '4px' }}>取消订单</Button>
-                        : ''
+                    <List
+                      renderHeader={
+                        <Flex justify="between">
+                          <Flex.Item onClick={() => { this.setState({ show: false }); }}>取消</Flex.Item>
+                          <Flex.Item style={{ textAlign: 'center' }}>评价跑男</Flex.Item >
+                          <Flex.Item style={{ textAlign: 'right' }} onClick={this.handleComment}>确认</Flex.Item >
+                        </Flex>
                       }
-                      {
-                        item.orderStatus == 3 ?
-                          <Button type="ghost" inline onClick={() => { this.signOrder(item.orderId); }} size="small" style={{ marginRight: '4px' }}>完成订单</Button>
-                        : ''
-                      }
-                      {
-                        item.orderStatus == 4 ?
-                          <Button type="ghost" inline onClick={() => { this.Comment(item.orderId, item.stars); }} size="small" style={{ marginRight: '4px' }}>评价跑男</Button>
-                        : ''
-                      }
-                    </div>
-                  }
-                />
-              </Card>
-            );
-          })}
-        </div>
-      </Tabs>
+                    >
+                      <Rate value={this.state.val} onChange={(val) => { this.setState({ val }); }} />
+                      <TextareaItem
+                        title="其他想说的:"
+                        clear
+                        placeholder="点击输入其他的评价描述"
+                        autoHeight
+                        rows="3"
+                        onChange={(txt) => { this.setState({ txt }); }}
+                      />
+                    </List>
+                  </Modal>
+                  <Card.Footer
+                    extra={
+                      <div>
+                        <Button type="ghost" inline onClick={() => { this.toInfo(item.orderId); }} size="small" style={{ marginRight: '4px' }}>查看订单</Button>
+                        {
+                          item.orderStatus == 1 ?
+                            <Button type="ghost" inline onClick={() => { this.cancelOrder(item.orderId); }} size="small" style={{ marginRight: '4px' }}>取消订单</Button>
+                          : ''
+                        }
+                        {
+                          item.orderStatus == 3 ?
+                            <Button type="ghost" inline onClick={() => { this.signOrder(item.orderId); }} size="small" style={{ marginRight: '4px' }}>完成订单</Button>
+                          : ''
+                        }
+                        {
+                          item.orderStatus == 4 ?
+                            <Button type="ghost" inline onClick={() => { this.Comment(item.orderId, item.stars); }} size="small" style={{ marginRight: '4px' }}>评价跑男</Button>
+                          : ''
+                        }
+                      </div>
+                    }
+                  />
+                </Card>
+              );
+            })}
+          </div>
+        </Tabs>
+      </div>
     );
   }
 }
