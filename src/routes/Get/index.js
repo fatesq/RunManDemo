@@ -19,7 +19,7 @@ const INSURED = [
   { value: 2, label: '1.00元保价', num: 1, extra: '若商品出现损坏或丢失,最高可获得100.00元赔付' },
   { value: 3, label: '不保价', num: 0, extra: '若商品出现损坏或丢失,最高可获得30元优惠赔付券' },
 ];
-const now = moment().format('YYYY-MM-DD HH:MM:SS');
+const now = moment().format('YYYY-MM-DD HH:mm');
 @connect(({ home, login, map, loading }) => ({
   home,
   config: home.config,
@@ -100,8 +100,8 @@ export default class Get extends React.PureComponent {
     this.setState({ goodsValue: val });
   }
   handleTime = (val) => {
-    this.setState({ time: moment(val).format('YYYY-MM-DD HH:MM:SS') });
-    this.setState({ showTime: moment(val).format('YYYY-MM-DD HH:MM:SS') });
+    this.setState({ time: moment(val).format('YYYY-MM-DD HH:mm') });
+    this.setState({ showTime: moment(val).format('YYYY-MM-DD HH:mm') });
   }
   handleSignFace = (val) => {
     this.setState({ signFace: val ? 1 : 2 });

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Icon, NavBar, Tabs } from 'antd-mobile';
 import { process } from '../../services/api';
+import { isWeiXin } from '../../utils/utils';
 
 const tabs = [
   { title: '我的邀请' },
@@ -22,6 +23,7 @@ export default class YQ extends React.PureComponent {
       invitorPhone: localStorage.phone,
       page: 1,
       rows: 99,
+      invitorType: 1,
     }).then((res) => {
       this.setState({ list1: res.rows });
     });
@@ -31,6 +33,7 @@ export default class YQ extends React.PureComponent {
       invitorPhone: localStorage.phone,
       page: 1,
       rows: 99,
+      userType: 1,
     }).then((res) => {
       this.setState({ list2: res.rows });
     });
@@ -47,16 +50,36 @@ export default class YQ extends React.PureComponent {
     }
     if (isIOS) {
       Native.WeChatShare(info);
-    } else {
-      window.wx.onMenuShareTimeline({
-        title: '巴比跑腿', // 分享标题
-        link: `http://rider.shjcqg.com/getshare?phone=${localStorage.phone}`, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-        imgUrl: '', // 分享图标
-        success: function () {
-        // 用户确认分享后执行的回调函数
-          alert('分享成功');
-        }
-      });
+    }
+    if (isWeiXin) {
+      if (type == 1) {
+        window.wx.onMenuShareTimeline({
+          title: '巴比跑腿', // 分享标题
+          link: `http://rider.shjcqg.com/getshare?phone=${localStorage.phone}`, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+          imgUrl: '', // 分享图标
+          success: () => {
+          // 用户确认分享后执行的回调函数
+            alert('分享成功');
+          },
+        });
+      } else {
+        window.wx.onMenuShareAppMessage({
+          title: '巴比跑腿', // 分享标题
+          desc: '巴比跑腿', // 分享描述
+          link: `http://rider.shjcqg.com/getshare?phone=${localStorage.phone}`, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+          imgUrl: '', // 分享图标
+          type: '', // 分享类型,music、video或link，不填默认为link
+          dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+          success: () => {
+          // 用户确认分享后执行的回调函数
+            alert('分享成功');
+          },
+          cancel: () => {
+          // 用户取消分享后执行的回调函数
+            alert('分享取消');
+          },
+        });
+      }
     }
   }
   render() {
@@ -79,25 +102,25 @@ export default class YQ extends React.PureComponent {
                 <img src="/i2.jpg" style={{ width: '50px', height: '50px' }} alt="" onClick={() => this.Share(2)} />
               </div>
               <div style={{ flex: 1 }}>
-                <img src="/i3.png" style={{ width: '50px', height: '50px' }} alt="" />
+                <img src="/i3.png" style={{ width: '50px', height: '50px' }} alt="" onClick={() => this.Share(3)} />
               </div>
             </div>
           </div>
           <Tabs tabs={tabs}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '250px', backgroundColor: '#fff' }}>
+            <div style={{ alignItems: 'center', justifyContent: 'center', overflow: 'scroll', height: '250px', backgroundColor: '#fff' }}>
               {
                 this.state.list1 ?
                 (
                   this.state.list1.map((item) => {
                     return (
-                      <p style={{ padding: '5px' }}>{item.bountyDesc}</p>
+                      <p style={{ padding: '5px' }}>已邀请：{item.phone}</p>
                     );
                   })
                 )
                 : '您还没有奖励'
               }
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '250px', backgroundColor: '#fff' }}>
+            <div style={{ alignItems: 'center', justifyContent: 'center', overflow: 'scroll', height: '250px', backgroundColor: '#fff' }}>
               {
                 this.state.list2 ?
                 (
