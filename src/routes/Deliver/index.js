@@ -275,7 +275,7 @@ export default class Deliver extends React.PureComponent {
                   <Stepper
                     style={{ width: '100%', maxWidth: '50%' }}
                     showNumber
-                    min={1}
+                    min={0}
                     max={15}
                     value={goodsWeight}
                     onChange={this.onChangWeight}

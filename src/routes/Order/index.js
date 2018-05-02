@@ -155,9 +155,9 @@ export default class Get extends React.PureComponent {
                           : ''
                         }
                         {
-                          item.orderStatus == 3 ?
+                          /* item.orderStatus == 3 ?
                             <Button type="ghost" inline onClick={() => { this.signOrder(item.orderId); }} size="small" style={{ marginRight: '4px' }}>完成订单</Button>
-                          : ''
+                          : '' */
                         }
                         {
                           item.orderStatus == 4 ?

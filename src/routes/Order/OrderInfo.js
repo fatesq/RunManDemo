@@ -93,7 +93,9 @@ export default class OrderInfo extends React.PureComponent {
                 {obj.payStatus != 1 && obj.orderStatus == 1? <Button type="primary" onClick={this.handlePay}>确定支付</Button> : ''}
                 <WhiteSpace />
                 {obj.orderStatus == 1 ? <Button type="warning" onClick={this.cancelOrder}>取消订单</Button> : ''}
-                {obj.orderStatus == 3 ? <Button type="primary" onClick={this.signOrder}>确认收货</Button> : ''}
+                {
+                  /* obj.orderStatus == 3 ? <Button type="primary" onClick={this.signOrder}>确认收货</Button> : '' */
+                }
               </div>
             )
           : ''

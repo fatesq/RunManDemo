@@ -14,6 +14,9 @@ export default class Address extends React.PureComponent {
     this.state = {
     };
   }
+  componentDidMount() {
+    
+  }
 
   openMap = () => {
     window.location.hash = '/map';
@@ -60,6 +63,7 @@ export default class Address extends React.PureComponent {
               ],
             })}
             clear
+            autoFocus
             error={!!getFieldError('floor')}
             onErrorClick={() => {
               alert(getFieldError('floor').join('、'));
